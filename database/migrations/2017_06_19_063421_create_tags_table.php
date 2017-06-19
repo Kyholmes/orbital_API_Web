@@ -16,7 +16,7 @@ class CreateTagsTable extends Migration
         Schema::create('tags', function (Blueprint $table) {
             $table->increments('id');
             $table->string('tag', 100);
-            $table->string('description', 250);
+            $table->string('description', 250)->nullable();
             $table->timestamps("last_update");
             $table->unsignedInteger('subscribe_no');
             $table->char('created_by', 8);

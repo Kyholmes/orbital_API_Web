@@ -16,8 +16,8 @@ class CreateUpvotesTable extends Migration
         Schema::create('upvotes', function (Blueprint $table) {
             $table->increments('id');
             $table->char('nus_id', 8);
-            $table->unsignedInteger('post_id');
-            $table->unsignedInteger('reply_id');
+            $table->unsignedInteger('post_id')->nullable();
+            $table->unsignedInteger('reply_id')->nullable();
         });
 
         Schema::table('upvotes', function(Blueprint $table){

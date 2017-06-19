@@ -18,9 +18,9 @@ class CreateAchievementsTable extends Migration
             $table->unsignedInteger('question_no')->default(0);
             $table->unsignedInteger('answer_no')->default(0);
             $table->unsignedInteger('comment_no')->default(0);
-            $table->unsignedInteger('points')->default(50);
+            $table->unsignedInteger('points')->default(0);
             $table->unsignedInteger('achievement_no')->default(0);
-            $table->char('nus_id', 8);
+            $table->char('nus_id', 8)->unique();
         });
 
         Schema::table('achievements', function(Blueprint $table){
