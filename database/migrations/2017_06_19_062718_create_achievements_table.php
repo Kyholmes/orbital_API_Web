@@ -21,12 +21,13 @@ class CreateAchievementsTable extends Migration
             $table->unsignedInteger('points')->default(0);
             $table->unsignedInteger('achievement_no')->default(0);
             $table->char('nus_id', 8)->unique();
-        });
-
-        Schema::table('achievements', function(Blueprint $table){
-            $table->primary('id');
             $table->foreign('nus_id')->references('nus_id')->on('users');
         });
+
+        // Schema::table('achievements', function(Blueprint $table){
+        //     $table->primary('id');
+        //     $table->foreign('nus_id')->references('nus_id')->on('users');
+        // });
     }
 
     /**

@@ -17,15 +17,16 @@ class CreateTagsTable extends Migration
             $table->increments('id');
             $table->string('tag', 100);
             $table->string('description', 250)->nullable();
-            $table->timestamps("last_update");
+            $table->timestamp("last_update");
             $table->unsignedInteger('subscribe_no');
             $table->char('created_by', 8);
-        });
-
-        Schema::table('tags', function(Blueprint $table){
-            $table->primary('id');
             $table->foreign('created_by')->references('nus_id')->on('users');
         });
+
+        // Schema::table('tags', function(Blueprint $table){
+        //     $table->primary('id');
+        //     $table->foreign('created_by')->references('nus_id')->on('users');
+        // });
     }
 
     /**

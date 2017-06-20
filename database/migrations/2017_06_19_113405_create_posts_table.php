@@ -20,18 +20,19 @@ class CreatePostsTable extends Migration
             $table->text('question_descrip')->nullable();
             $table->unsignedInteger('vote')->default(0);
             $table->unsignedInteger('subscribe_no')->default(0);
-            $table->timestamps('created_date');
-            $table->timestamps('updated_date');
-            $table->timestamps('expired_date')->nullable();
-            $table->boolean('time_limit')->default('f');
+            $table->timestamp('created_date');
+            $table->timestamp('updated_date');
+            $table->timestamp('expired_date')->nullable();
+            $table->boolean('time_limit')->default(false);
             $table->unsignedInteger('points')->nullable();
             $table->unsignedInteger('nus_id');
-        });
-
-        Schema::table('posts', function(Blueprint $table){
-            $table->primary('id');
             $table->foreign('nus_id')->references('nus_id')->on('users');
         });
+
+        // Schema::table('posts', function(Blueprint $table){
+        //     $table->primary('id');
+        //     $table->foreign('nus_id')->references('nus_id')->on('users');
+        // });
     }
 
     /**

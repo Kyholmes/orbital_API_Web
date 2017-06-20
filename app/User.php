@@ -15,7 +15,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'nus_id', 'name', 'password', 'username', 'role'
     ];
 
     /**
@@ -24,6 +24,38 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password'
     ];
+
+    public $timestamps = false;
+
+    public function access_token()
+    {
+        return $this->hasOne('App\Access_Token', 'nus_id', 'nus_id');
+    }
+
+    public function upvote()
+    {
+        return $this->hasMany('App\Upvote', 'nus_id', 'nus_id');
+    }
+
+    public function achievement()
+    {
+        return $this->hasOne('App\Achievement', 'nus_id', 'nus_id');
+    }
+
+    public function tag()
+    {
+        return $this->hasMany('App\Tag', 'created_by', 'nus_id');
+    }
+
+    public function subscribe_tag()
+    {
+        return $this->hasMany('App\Subscription_Tag', 'nus_id', 'nus_id');
+    }
+
+    public function post()
+    {
+        return $this->hasMany('App\Post', 'nus_id', 'nus_id');
+    }
 }

@@ -15,22 +15,26 @@ class CreateNotificationsTable extends Migration
     {
         Schema::create('notifications', function (Blueprint $table) {
             $table->increments('id');
-            $table->timestamps('created_date')
-            $table->timestamps('expired_date');
-            $table->boolean('read')->default('f');
+            $table->timestamp('created_date');
+            $table->timestamp('expired_date');
+            $table->boolean('read')->default(false);
             $table->char('nus_id', 8);
             $table->unsignedInteger('notification_type');
             $table->unsignedInteger('comment_id')->nullable();
             $table->unsignedInteger('post_id')->nullable();
-        });
-
-        Schema::table('notifications', function(Blueprint $table){
-            $table->primary('id');
             $table->foreign('post_id')->references('id')->on('posts');
             $table->foreign('nus_id')->references('nus_id')->on('users');
             $table->foreign('comment_id')->references('comment_id')->on('comments');
             $table->foreign('notification_type')->references('id')->on('notification__types');
         });
+
+        // Schema::table('notifications', function(Blueprint $table){
+        //     $table->primary('id');
+        //     $table->foreign('post_id')->references('id')->on('posts');
+        //     $table->foreign('nus_id')->references('nus_id')->on('users');
+        //     $table->foreign('comment_id')->references('comment_id')->on('comments');
+        //     $table->foreign('notification_type')->references('id')->on('notification__types');
+        // });
     }
 
     /**

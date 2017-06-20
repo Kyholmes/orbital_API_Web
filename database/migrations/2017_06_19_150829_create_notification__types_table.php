@@ -18,9 +18,9 @@ class CreateNotificationTypesTable extends Migration
             $table->text('description');
         });
 
-        Schema::table('notification__types', function(Blueprint $table){
-            $table->primary('id');
-        });
+        // Schema::table('notification__types', function(Blueprint $table){
+        //     $table->primary('id');
+        // });
     }
 
     /**

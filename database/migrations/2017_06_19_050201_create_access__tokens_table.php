@@ -16,15 +16,16 @@ class CreateAccessTokensTable extends Migration
         Schema::create('access__tokens', function (Blueprint $table) {
             $table->increments('id');
             $table->string('token', 500);
-            $table->timestamps('created_date');
-            $table->timestamps('expired_date');
+            $table->timestamp('created_date');
+            $table->timestamp('expired_date');
             $table->string('nus_id', 8);
-        });
-
-        Schema::table('access__tokens', function(Blueprint $table){
-            $table->primary('id');
             $table->foreign('nus_id')->references('nus_id')->on('users');
         });
+
+        // Schema::table('access__tokens', function(Blueprint $table){
+        //     $table->primary('id');
+        //     $table->foreign('nus_id')->references('nus_id')->on('users');
+        // });
     }
 
     /**

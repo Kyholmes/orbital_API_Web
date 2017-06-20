@@ -20,12 +20,13 @@ class CreateUsersTable extends Migration
             $table->string('username', 50)->unique();
             $table->string('password',100);
             $table->string('role',50)->nullable();
+            // $table->primary('nus_id');
         });
 
-        Schema::table('users', function(Blueprint $table)
-        {
-            $table->primary(['id', 'nus_id']);
-        });
+        // Schema::table('users', function(Blueprint $table)
+        // {
+        //     $table->primary(['id', 'nus_id']);
+        // });
     }
 
     /**
