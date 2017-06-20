@@ -18,5 +18,8 @@ class Subscription_Post extends Model
     	return $this->belongsTo('App\User', 'nus_id', 'nus_id');
     }
 
-    
+    public function post()
+    {
+    	return $this->belongsTo('App\Post', 'post_id', 'id');
+    }
 }

@@ -58,4 +58,19 @@ class User extends Authenticatable
     {
         return $this->hasMany('App\Post', 'nus_id', 'nus_id');
     }
+
+    public function subscribe_post()
+    {
+        return $this->hasMany('App\Subscription_Post', 'nus_id', 'nus_id');
+    }
+
+    public function comment()
+    {
+        return $this->hasMany('App\Comment', 'nus_id', 'nus_id');
+    }
+
+    public function notification()
+    {
+        return $this->hasMany('App\Notification', 'nus_id', 'nus_id');
+    }
 }

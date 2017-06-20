@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateTagPostsTable extends Migration
+class CreateSubscriptionPostsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,18 @@ class CreateTagPostsTable extends Migration
      */
     public function up()
     {
-        Schema::create('tag__posts', function (Blueprint $table) {
+        Schema::create('subscription__posts', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->unsignedInteger('post_id');
-            $table->unsignedInteger('tag_id');
+            $table->char('nus_id', 8);
+            $table->timestamp('last_visit');
             $table->foreign('post_id')->references('id')->on('posts');
-            $table->foreign('tag_id')->references('id')->on('tags');
+            $table->foreign('nus_id')->references('nus_id')->on('users');
         });
-        // Schema::table('tag__posts', function(Blueprint $table){
+
+        // Schema::table('subscription__posts', function(Blueprint $table){
         //     $table->foreign('post_id')->references('id')->on('posts');
-        //     $table->foreign('tag_id')->references('id')->on('tags');
+        //     $table->foreign('nus_id')->references('nus_id')->on('users');
         // });
     }
 
@@ -32,6 +35,6 @@ class CreateTagPostsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tag__posts');
+        Schema::dropIfExists('subscription__posts');
     }
 }

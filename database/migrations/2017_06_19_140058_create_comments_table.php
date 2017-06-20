@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateNotificationsTable extends Migration
+class CreateCommentsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,27 +13,28 @@ class CreateNotificationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('notifications', function (Blueprint $table) {
+        Schema::create('comments', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->increments('id');
-            $table->timestamp('created_date');
-            $table->timestamp('expired_date');
-            $table->boolean('read')->default(false);
+            $table->text('description');
+            $table->boolean('best_answer')->default(false);
+            $table->char('reply_to_nus_id', 8)->nullable();
             $table->char('nus_id', 8);
-            $table->unsignedInteger('notification_type');
+            $table->unsignedInteger('post_id');
+            $table->string('img_link', 500)->nullable();
+            $table->timestamp('created_date');
             $table->unsignedInteger('comment_id')->nullable();
-            $table->unsignedInteger('post_id')->nullable();
+            $table->timestamp('updated_date');
+            $table->unsignedInteger('vote')->default(0);
             $table->foreign('post_id')->references('id')->on('posts');
             $table->foreign('nus_id')->references('nus_id')->on('users');
-            $table->foreign('comment_id')->references('comment_id')->on('comments');
-            $table->foreign('notification_type')->references('id')->on('notification__types');
+            $table->foreign('comment_id')->references('id')->on('comments');
         });
 
-        // Schema::table('notifications', function(Blueprint $table){
-        //     $table->primary('id');
+        // Schema::table('comments', function(Blueprint $table){
         //     $table->foreign('post_id')->references('id')->on('posts');
         //     $table->foreign('nus_id')->references('nus_id')->on('users');
         //     $table->foreign('comment_id')->references('comment_id')->on('comments');
-        //     $table->foreign('notification_type')->references('id')->on('notification__types');
         // });
     }
 
@@ -44,6 +45,6 @@ class CreateNotificationsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('notifications');
+        Schema::dropIfExists('comments');
     }
 }

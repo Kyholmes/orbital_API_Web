@@ -23,8 +23,13 @@ class Tag extends Model
         return $this->hasMany('App\Subscription_Tag', 'tag_id', 'id');
     }
 
-    public function Tag_Post()
+    public function tag_post()
     {
     	return $this->hasMany('App\Tag_Post', 'tag_id', 'id');
+    }
+
+    public function notification()
+    {
+    	return $this->hasMany('App\Notification', 'tag_id', 'id');
     }
 }

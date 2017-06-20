@@ -20,9 +20,23 @@ class Post extends Model
     	return $this->belongsTo('App\User', 'nus_id', 'nus_id');
     }
 
-    public function Tag_Post()
+    public function tag_post()
     {
     	return $this->hasMany('App\Tag_Post', 'post_id', 'id');
     }
 
+    public function subscribe_post()
+    {
+        return $this->hasMany('App\Subscription_Post', 'post_id', 'id');
+    }
+
+    public function comment()
+    {
+        return $this->hasMany('App\Comment', 'post_id', 'id');
+    }
+
+    public function notification()
+    {
+        return $this->hasMany('App\Notification', 'post_id', 'id');
+    }
 }

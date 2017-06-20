@@ -14,6 +14,7 @@ class CreateAccessTokensTable extends Migration
     public function up()
     {
         Schema::create('access__tokens', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->increments('id');
             $table->string('token', 500);
             $table->timestamp('created_date');

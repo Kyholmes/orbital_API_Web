@@ -14,6 +14,7 @@ class CreatePostsTable extends Migration
     public function up()
     {
         Schema::create('posts', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->increments('id');
             $table->string('img_link', 500)->nullable();
             $table->string('title', 300);
@@ -25,7 +26,7 @@ class CreatePostsTable extends Migration
             $table->timestamp('expired_date')->nullable();
             $table->boolean('time_limit')->default(false);
             $table->unsignedInteger('points')->nullable();
-            $table->unsignedInteger('nus_id');
+            $table->char('nus_id', 8);
             $table->foreign('nus_id')->references('nus_id')->on('users');
         });
 
