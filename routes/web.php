@@ -22,4 +22,8 @@ Route::prefix('api/v1')->group(function(){
 	Route::post('/user/login', 'API\ApiUserController@login');
 
 	Route::delete('/user/logout', 'API\ApiUserController@logout');
+
+	Route::delete('/user/logout', 'API\ApiUserController@logout');
+
+	Route::put('/user/update', 'API\ApiUserController@update');
 });

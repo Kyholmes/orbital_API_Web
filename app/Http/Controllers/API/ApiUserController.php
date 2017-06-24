@@ -158,4 +158,38 @@ class ApiUserController extends ApiController
 
     	return $this->successNoContent();
     }
+
+    //user change username
+    public function edit_profile()
+    {
+    	$v = Validator::make(Input::all(), [
+    		'username' => 'required|unique:user'
+    	]);
+
+    	if($v->fails())
+    	{
+    		return $this->errorWrongArgs($v->errors());
+    	}
+
+    	$post = Input::all();
+
+    	$get_nus_id = (new AuthKeyController)->get_nus_id('auth-key');
+
+    	// $updateDetail = ['username' => $post['username']];
+
+    	$get_user = User::where('nus_id', $get_nus_id)->get();
+
+    	$get_user->username = $post['username'];
+
+    	$update = $get_user->save();
+
+    	if($update)
+    	{
+    		return $this->respondWithArray(array('success' => ['code' => 'SUCCESS', 'http_code' => 200, 'message' => 'username updated']), array());
+    	}
+    	else
+    	{
+    		return $this->errorInternalError('server down');
+    	}
+    }
 }
