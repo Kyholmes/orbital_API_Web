@@ -20,4 +20,6 @@ Route::prefix('api/v1')->group(function(){
 	Route::post('/register', 'API\ApiUserController@register');
 
 	Route::post('/user/login', 'API\ApiUserController@login');
+
+	Route::delete('/user/logout', 'API\ApiUserController@logout');
 });

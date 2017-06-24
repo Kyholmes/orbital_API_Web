@@ -142,4 +142,20 @@ class ApiUserController extends ApiController
 
     	return $new_token;
     }
+
+    //logout
+    public function logout()
+    {
+    	$token = (new AuthKeyController)->get_auth_key('auth-key');
+
+    	//delete access token when logout
+    	$delete_token = Access_Token::where('token', '=', $token)->delete();
+
+    	if(empty($delete_token))
+    	{
+    		return $this->errorInternalError('logout failed');
+    	}
+
+    	return $this->successNoContent();
+    }
 }
