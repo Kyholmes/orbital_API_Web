@@ -17,13 +17,12 @@ class ApiAuthMiddleware
     public function handle($request, Closure $next)
     {
         $header_item = $request->header();
-
         $api_key = $header_item['api-key'][0];
 
         //check if api token is valid
         $api_auth = "08006c47-d0b9-4990-adb1-7d76610a4536";
 
-        if(empty($api_auth))
+        if(strcmp($api_key, $api_auth))
         {
             return Response::json([
                 'error' => [

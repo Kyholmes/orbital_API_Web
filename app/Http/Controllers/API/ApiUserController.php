@@ -19,6 +19,9 @@ class ApiUserController extends ApiController
     public function __construct()
     {
     	$this->middleware('api_auth');
+
+    	$this->middleware('token_auth', ['only' => ['edit_profile']]);
+
     	parent::__construct();
     }
 
@@ -92,7 +95,7 @@ class ApiUserController extends ApiController
     	$login_user = User::with(['access_token' => function($q){
     		$q->orderBy('created_date', 'desc')->first();
     	}])->with('subscribe_tag')->where('nus_id', '=', $valid_user->nus_id)->first();
-
+    	ob_start();
     	return $this->respondWithItem($login_user, new UserTransformer);
     }
 
@@ -110,7 +113,8 @@ class ApiUserController extends ApiController
 
     	$current_time = time();
 
-    	$expired_date = $current_time + (24 * 60 * 60);
+    	// $expired_date = $current_time + (24 * 60 * 60);
+    	$expired_date = $current_time + 1;
 
     	$datetimeFormat = 'Y-m-d H:i:s';
 
