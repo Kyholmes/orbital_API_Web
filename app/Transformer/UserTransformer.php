@@ -9,7 +9,7 @@ use League\Fractal\TransformerAbstract;
 
 class UserTransformer extends TransformerAbstract
 {
-	protected $defaultIncludes = ['access_token', 'subscription_tag'];
+	protected $availableIncludes = ['access_token', 'subscription_tag'];
 
 	/**
 	* turn this item object into a generic array
@@ -32,7 +32,9 @@ class UserTransformer extends TransformerAbstract
 	*/
 	public function includeAccessToken(User $user)
 	{
-		$token = Access_Token::where('nus_id', $user->nus_id)->first();
+		// $token = Access_Token::where('nus_id', $user->nus_id)->first();
+
+		$token = $user->access_token;
 
 		return $this->item($token, new AccessTokenTransformer);
 	}
@@ -43,7 +45,9 @@ class UserTransformer extends TransformerAbstract
 	*/
 	public function includeSubscriptionTag(User $user)
 	{
-		$subscription_tag = Subscription_Tag::where('nus_id', $user->nus_id)->get();
+		// $subscription_tag = Subscription_Tag::where('nus_id', $user->nus_id)->get();
+
+		$subscription_tag = $user->subscribe_tag;
 
 		if($subscription_tag != null)
 		{

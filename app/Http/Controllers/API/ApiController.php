@@ -8,6 +8,7 @@ use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
 use League\Fractal\Manager;
 use League\Fractal\Pagination\Cursor;
+use League\Fractal\Serializer\ArraySerializer;
 use Input;
 use Response;
 
@@ -34,11 +35,13 @@ class ApiController extends Controller
     public function __construct()
     {
     	$this->fractal = new Manager();
-
+		$this->fractal->setSerializer(new ArraySerializer());
+		
     	if(isset($_GET['include']))
     	{
-    		$fractal->parseIncludes($_GET['include']);
+    		$this->fractal->parseIncludes($_GET['include']);
     	}
+    	
     }
 
     /**

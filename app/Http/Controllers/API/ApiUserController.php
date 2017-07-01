@@ -31,7 +31,6 @@ class ApiUserController extends ApiController
     	$v = Validator::make(Input::all(), [
     			'nus_id' => 'required',
     			'name' => 'required',
-    			'username' => 'required',
     			'password' => 'required',
     			'role'=> 'required'	
     	]);
