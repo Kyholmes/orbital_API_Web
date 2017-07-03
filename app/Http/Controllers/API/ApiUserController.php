@@ -94,7 +94,7 @@ class ApiUserController extends ApiController
     	$login_user = User::with(['access_token' => function($q){
     		$q->orderBy('created_date', 'desc')->first();
     	}])->with('subscribe_tag')->where('nus_id', '=', $valid_user->nus_id)->first();
-    	ob_start();
+    	// ob_start();
     	return $this->respondWithItem($login_user, new UserTransformer);
     }
 
@@ -112,8 +112,8 @@ class ApiUserController extends ApiController
 
     	$current_time = time();
 
-    	// $expired_date = $current_time + (24 * 60 * 60);
-    	$expired_date = $current_time + 1;
+    	$expired_date = $current_time + (24 * 60 * 60);
+    	// $expired_date = $current_time + 1;
 
     	$datetimeFormat = 'Y-m-d H:i:s';
 
@@ -163,12 +163,12 @@ class ApiUserController extends ApiController
     }
 
     //user change username
-    public function edit_profile()
+    public function edit_username()
     {
     	$v = Validator::make(Input::all(), [
-    		'username' => 'required|unique:user'
+    		'username' => 'required'
     	]);
-
+    	
     	if($v->fails())
     	{
     		return $this->errorWrongArgs($v->errors());
@@ -176,19 +176,33 @@ class ApiUserController extends ApiController
 
     	$post = Input::all();
 
-    	$get_nus_id = (new AuthKeyController)->get_nus_id('auth-key');
+		$get_nus_id = (new AuthKeyController)->get_nus_id('auth-key');
+
+		$get_user = User::where('nus_id', $get_nus_id)->first();
+
+		if($get_user->username == "" || $get_user->username != $post['username'])
+		{
+			$checkUsername = User::where('username', $post['username'])->exists();
+
+	    	if($checkUsername)
+	    	{
+	    		return $this->errorConflict('this username has been taken');
+	    	}
+		}
 
     	// $updateDetail = ['username' => $post['username']];
-
-    	$get_user = User::where('nus_id', $get_nus_id)->get();
+    	
+    	// $get_user = User::where('nus_id', $get_nus_id)->update(['username' => $post['username']]);
 
     	$get_user->username = $post['username'];
 
-    	$update = $get_user->save();
+    	$get_user->save();
 
-    	if($update)
+    	if($get_user)
     	{
-    		return $this->respondWithArray(array('success' => ['code' => 'SUCCESS', 'http_code' => 200, 'message' => 'username updated']), array());
+    		// return $this->respondWithArray(array('success' => ['code' => 'SUCCESS', 'http_code' => 200, 'message' => 'username updated']), array());
+
+    		return $this->respondWithItem($get_user, new UserTransformer);
     	}
     	else
     	{

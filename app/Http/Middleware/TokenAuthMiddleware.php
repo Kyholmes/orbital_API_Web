@@ -24,7 +24,7 @@ class TokenAuthMiddleware
         $auth_key = $header_item['auth-key'][0];
 
         //check if access token is valid
-        $access_auth = Access_Token::where('access_token', $auth_key)->first();
+        $access_auth = Access_Token::where('token', $auth_key)->first();
 
         if(empty($access_auth))
         {
@@ -64,11 +64,16 @@ class TokenAuthMiddleware
     {
         $now = time();
 
+        $expired_date = strtotime($key->expired_date);
+        // echo $now;
+
+        // echo $expired_date;
+
         $message_code = 0;
 
-        if($key->expired_date < $now)
+        if($expired_date < $now)
         {
-            $delete_token = Access_Token::where('access_token', $key->access_token)->delete();
+            $delete_token = Access_Token::where('token', $key->access_token)->delete();
 
             if($delete_token > 0)
             {
@@ -76,14 +81,15 @@ class TokenAuthMiddleware
             }
             else
             {
+                echo "delete failed";
                 $message_code = 500;
             }
         }
-        else if(($key->expired_date - $now) <= (8 * 60 * 60))
+        else if(($expired_date - $now) <= (8 * 60 * 60))
         {
             $expired = $key->expired_date + (24 * 60 * 60);
 
-            $update_token = Access_Token::where('access_token', $key->access_token)->first();
+            $update_token = Access_Token::where('token', $key->access_token)->first();
 
             $update_token->expired_date = $expired;
 
@@ -91,6 +97,7 @@ class TokenAuthMiddleware
 
             if(empty($update_token))
             {
+                echo "update failed";
                 $message_code = 500;
             }
         }

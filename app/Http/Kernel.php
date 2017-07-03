@@ -58,5 +58,6 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
 
         'api_auth' => \App\Http\Middleware\ApiAuthMiddleware::class,
+        'token_auth' => \App\Http\Middleware\TokenAuthMiddleware::class,
     ];
 }
