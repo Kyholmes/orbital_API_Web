@@ -8,7 +8,7 @@ class Tag extends Model
 {
     //
     protected $fillable = [
-        'tag', 'description', 'created_by', 'last_update', 'subscribe_no'
+        'tag', 'description', 'created_by', 'last_update', 'subscribe_no', 'status'
     ];
 
     public $timestamps = false;

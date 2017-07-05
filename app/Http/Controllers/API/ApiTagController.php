@@ -8,6 +8,7 @@ use App\Http\Controllers\GetCurrentTimeController;
 use App\User;
 use App\Tag;
 use App\Subscription_Tag;
+use App\Tag_Post;
 use Request;
 use Validator;
 use Input;
@@ -58,6 +59,8 @@ class ApiTagController extends ApiController
 	    	$new_tag->subscribe_no = 1;
 
 	    	$new_tag->created_by = $get_nus_id;
+
+	    	$new_tag->status = 1;
 
 	    	$insert_success = $new_tag->save();
 
@@ -113,6 +116,8 @@ class ApiTagController extends ApiController
 
 	    	$get_tag->last_update = $current_time;
 
+	    	$get_tag->status = $post['status'];
+
 	    	$updateSuccess = $get_tag->save();
 
 	    	if($updateSuccess)
@@ -128,6 +133,39 @@ class ApiTagController extends ApiController
     	{
     		return $this->errorNotFound('Tag not found');
     	}
+    }
+
+    public function delete()
+    {
+    	if(!Input::has('tag_id'))
+    	{
+    		return $this->errorWrongArgs('tag_id field is required');
+    	}
+
+    	$post = Input::all();
+
+    	$get_tag = Tag::where('id', $post['tag_id'])->first();
+
+    	if($get_tag->subscribe_no > 1)
+    	{
+    		return $this->errorForbidden('tag cannot be deleted, subscriptions exist');
+    	}
+
+    	ApiTagController::CheckPostExist($post['tag_id']);
+
+    	$delete_subscription_tag = Subscription_Tag::where('tag_id', $post['tag_id'])->delete();
+
+    	if($delete_subscription_tag)
+    	{
+    		$delete_tag = Tag::where('id', $post['tag_id'])->delete();
+
+	    	if($delete_tag)
+	    	{
+	  			return $this->successNoContent();
+	    	}
+    	}
+
+    	return $this->errorInternalError('server down');
     }
 
     public function addNewSubscription($nus_id, $tag_id, $current_time)
@@ -149,6 +187,16 @@ class ApiTagController extends ApiController
     	else
     	{
     		return false;
+    	}
+    }
+
+    public function CheckPostExist($tag_id)
+    {
+    	$post_exist = Tag_Post::where('tag_id', $tag_id)->get();
+
+    	if($post_exist == null)
+    	{
+    		return $this->errorForbidden('tag cannot be deleted, posts with this tag exist');
     	}
     }
 }

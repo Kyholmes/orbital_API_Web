@@ -32,4 +32,6 @@ Route::prefix('api/v1')->group(function(){
 	Route::post('/tags', 'API\ApiTagController@add');
 
 	Route::put('/tags', 'API\ApiTagController@update');
+
+	Route::delete('/tags', 'API\ApiTagController@delete');
 });

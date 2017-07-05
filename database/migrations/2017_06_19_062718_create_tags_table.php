@@ -21,6 +21,7 @@ class CreateTagsTable extends Migration
             $table->timestamp("last_update");
             $table->unsignedInteger('subscribe_no');
             $table->char('created_by', 8);
+            $table->unsignedInteger('status');
             $table->foreign('created_by')->references('nus_id')->on('users');
         });
 
