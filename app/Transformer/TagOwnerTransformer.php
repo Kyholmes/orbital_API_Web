@@ -3,9 +3,9 @@
 namespace App\Transformer;
 
 use App\User;
-use League\Fractal\TranformerAbstract;
+use League\Fractal\TransformerAbstract;
 
-class TagOwnerTransformer extends TranformerAbstract
+class TagOwnerTransformer extends TransformerAbstract
 {
 	/**
 	* turn this item object into a generic arrray

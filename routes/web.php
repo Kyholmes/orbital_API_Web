@@ -29,6 +29,8 @@ Route::prefix('api/v1')->group(function(){
 	Route::put('/user/update', 'API\ApiUserController@edit_username');
 
 	//tag
+	Route::get('/tags', 'API\ApiTagController@get');
+
 	Route::post('/tags', 'API\ApiTagController@add');
 
 	Route::put('/tags', 'API\ApiTagController@update');

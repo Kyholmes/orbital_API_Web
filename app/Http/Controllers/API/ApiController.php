@@ -75,16 +75,18 @@ class ApiController extends Controller
     }
 
     //return a collection of items
-    protected function respondWithCollection($collection, $callback, $cursor = null)
+    protected function respondWithCollection($collection, $callback, $resourceKey = null, $cursor = null)
     {
     	$resource = new Collection($collection, $callback);
+
+    	$resource->setResourceKey($resourceKey);
 
     	if(!empty($cursor))
     	{
     		$resource->setCursor($cursor);
     	}
 
-    	$rootScope = $tis->fractal->createData($resource);
+    	$rootScope = $this->fractal->createData($resource);
 
     	return $this->respondWithArray($rootScope->toArray());
     }

@@ -3,12 +3,13 @@
 namespace App\Http\Controllers\API;
 
 // use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\API\ApiController;
 use App\Http\Controllers\GetCurrentTimeController;
 use App\User;
 use App\Tag;
 use App\Subscription_Tag;
 use App\Tag_Post;
+use App\Transformer\TagTransformer;
 use Request;
 use Validator;
 use Input;
@@ -25,6 +26,20 @@ class ApiTagController extends ApiController
     	$this->middleware('token_auth');
 
     	parent::__construct();
+    }
+
+    public function get()
+    {
+    	$get_all_tag = Tag::where('status', 1)->get();
+
+    	if($get_all_tag != null)
+    	{
+    		return $this->respondWithCollection($get_all_tag, new TagTransformer, 'tag');
+    	}
+    	else
+    	{
+    		return $this->errorInternalError('server down');
+    	}
     }
 
     public function add()
