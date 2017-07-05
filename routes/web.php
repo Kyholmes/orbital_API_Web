@@ -19,6 +19,7 @@ Route::prefix('api/v1')->group(function(){
 	
 	Route::post('/register', 'API\ApiUserController@register');
 
+	//user
 	Route::post('/user/login', 'API\ApiUserController@login');
 
 	Route::delete('/user/logout', 'API\ApiUserController@logout');
@@ -26,4 +27,9 @@ Route::prefix('api/v1')->group(function(){
 	Route::delete('/user/logout', 'API\ApiUserController@logout');
 
 	Route::put('/user/update', 'API\ApiUserController@edit_username');
+
+	//tag
+	Route::post('/tags', 'API\ApiTagController@add');
+
+	Route::put('/tags', 'API\ApiTagController@update');
 });
