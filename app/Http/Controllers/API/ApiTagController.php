@@ -50,16 +50,6 @@ class ApiTagController extends ApiController
 	    	$new_tag->tag = $post['tag_name'];
 	    	
 	    	$new_tag->description = $post['description'];
-	    	
-	    	// date_default_timezone_set('Asia/Singapore');
-
-	    	// $current_time = time();
-
-	    	// $datetimeFormat = 'Y-m-d H:i:s';
-
-	    	// $current = new \DateTime();
-
-	    	// $current->setTimestamp($current_time);
 
 			$current_time = GetCurrentTimeController::getCurrentTime();
 
@@ -106,18 +96,38 @@ class ApiTagController extends ApiController
 
     	$get_exist_tag = Tag::where('tag', $post['tag_name'])->first();
 
-    	if($get_nus_id != $get_exist_tag->created_by) 
+    	if($post['tag_id'] != $get_exist_tag->id) 
     	{
     		return $this->errorConflict('this tag is already created');
     	}
 
     	$get_tag = Tag::where('id', $post['tag_id'])->first();
 
-    	$get_tag->tag = $post['tag_name'];
+    	if($get_tag != null)
+    	{
+    		$get_tag->tag = $post['tag_name'];
 
-    	$get_tag->description = $post['description'];
+	    	$get_tag->description = $post['description'];
 
-    	$updateSuccess = $get_tag->save();
+	    	$current_time = GetCurrentTimeController::getCurrentTime();
+
+	    	$get_tag->last_update = $current_time;
+
+	    	$updateSuccess = $get_tag->save();
+
+	    	if($updateSuccess)
+	    	{
+	    		return $this->successNoContent();
+	    	}
+	    	else
+	    	{
+	    		return $this->errorInternalError('server down');
+	    	}
+    	}
+    	else
+    	{
+    		return $this->errorNotFound('Tag not found');
+    	}
     }
 
     public function addNewSubscription($nus_id, $tag_id, $current_time)
