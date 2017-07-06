@@ -6,11 +6,13 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\API\ApiController;
 use App\User;
 use App\Access_Token;
+use App\Subscription_Tag;
 use Request;
 use Validator;
 use Input;
 use Hash;
 use App\Transformer\UserTransformer;
+use App\Transformer\SubscriptionTagTransformer;
 
 class ApiUserController extends ApiController
 {
@@ -94,7 +96,7 @@ class ApiUserController extends ApiController
     	$login_user = User::with(['access_token' => function($q){
     		$q->orderBy('created_date', 'desc')->first();
     	}])->with('subscribe_tag')->where('nus_id', '=', $valid_user->nus_id)->first();
-    	// ob_start();
+
     	return $this->respondWithItem($login_user, new UserTransformer);
     }
 
@@ -124,8 +126,7 @@ class ApiUserController extends ApiController
 		$current->setTimestamp($current_time);
 
 		$expired->setTimestamp($expired_date);
-		// var_dump($date->format($datetimeFormat));
-		// die();
+
     	$new_token = new Access_Token();
 
     	$new_token->token = $token;
@@ -190,23 +191,36 @@ class ApiUserController extends ApiController
 	    	}
 		}
 
-    	// $updateDetail = ['username' => $post['username']];
-    	
-    	// $get_user = User::where('nus_id', $get_nus_id)->update(['username' => $post['username']]);
-
     	$get_user->username = $post['username'];
 
     	$get_user->save();
 
     	if($get_user)
     	{
-    		// return $this->respondWithArray(array('success' => ['code' => 'SUCCESS', 'http_code' => 200, 'message' => 'username updated']), array());
-
     		return $this->respondWithItem($get_user, new UserTransformer);
     	}
     	else
     	{
     		return $this->errorInternalError('server down');
     	}
+    }
+
+    public function get_subscribe_tag()
+    {
+    	if(!Input::has('nus_id'))
+    	{
+    		return $this->errorWrongArgs('nus_id field is required');
+    	}
+
+    	$post = Input::all();
+
+    	$get_all_subscription_tag = Subscription_Tag::where('nus_id', $post['nus_id'])->get();
+
+    	if($get_all_subscription_tag != null)
+    	{
+    		return $this->respondWithCollection($get_all_subscription_tag, new SubscriptionTagTransformer, 'subscription_tag');
+    	}
+
+    	return $this->errorInternalError('server down');
     }
 }
