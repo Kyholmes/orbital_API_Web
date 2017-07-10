@@ -21,6 +21,7 @@ class TagTransformer extends TransformerAbstract
 			'description' => $tag->description,
 			'last_update' => $tag->last_update,
 			'subscribe_no' => $tag->subscribe_no,
+			"tag_status" => $tag->status
 		];
 	}
 

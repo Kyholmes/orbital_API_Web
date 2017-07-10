@@ -51,7 +51,7 @@ class UserTransformer extends TransformerAbstract
 
 		if($subscription_tag != null)
 		{
-			return $this->collection($subscription_tag, new SubscriptionTagTransformer);
+			return $this->collection($subscription_tag, new SubscriptionTagTransformer, 'subscription_tag');
 		}
 	}
 }

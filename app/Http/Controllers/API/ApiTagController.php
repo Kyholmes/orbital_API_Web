@@ -10,6 +10,7 @@ use App\Tag;
 use App\Subscription_Tag;
 use App\Tag_Post;
 use App\Transformer\TagTransformer;
+use App\Transformer\SubscriptionTagTransformer;
 use Request;
 use Validator;
 use Input;
@@ -85,7 +86,9 @@ class ApiTagController extends ApiController
 
 	    		if($addSuccess)
 	    		{
-	    			return $this->successNoContent();
+                    $get_new_tag = Subscription_Tag::where('tag_id', $new_tag->id)->first();
+
+	    			return $this->respondWithItem($get_new_tag, new SubscriptionTagTransformer, 'subscription_tag');
 	    		}
 	    	}
 	    	

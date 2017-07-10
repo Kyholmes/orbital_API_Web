@@ -65,9 +65,11 @@ class ApiController extends Controller
     }
 
     //return single item
-    protected function respondWithItem($item, $callback)
+    protected function respondWithItem($item, $callback, $resourceKey = null)
     {
     	$resource = new Item($item, $callback);
+
+        $resource->setResourceKey($resourceKey);
 
     	$rootScope = $this->fractal->createData($resource);
 
