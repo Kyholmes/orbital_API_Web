@@ -30,6 +30,8 @@ Route::prefix('api/v1')->group(function(){
 
 	Route::get('/user/tags', 'API\ApiUserController@get_subscribe_tag');
 
+	Route::post('/user/tags', 'API\ApiUserController@subscribe_tag');
+
 	//tag
 	Route::get('/tags', 'API\ApiTagController@get');
 
@@ -38,4 +40,9 @@ Route::prefix('api/v1')->group(function(){
 	Route::put('/tags', 'API\ApiTagController@update');
 
 	Route::delete('/tags', 'API\ApiTagController@delete');
+
+	Route::get('/tags/post', 'API\ApiTagController@get_post')
+
+	//post
+	Route::post('/post', 'API\ApiPostController@add');
 });

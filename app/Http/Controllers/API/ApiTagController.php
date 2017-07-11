@@ -82,7 +82,7 @@ class ApiTagController extends ApiController
 
 	    	if($insert_success)
 	    	{
-	    		$addSuccess = ApiTagController::addNewSubscription($get_nus_id, $new_tag->id, $current_time);
+	    		$addSuccess = ApiTagController::addNewSubscriptionTag($get_nus_id, $new_tag->id, $current_time);
 
 	    		if($addSuccess)
 	    		{
@@ -117,7 +117,7 @@ class ApiTagController extends ApiController
 
     	$get_exist_tag = Tag::where('tag', $post['tag_name'])->first();
 
-    	if($post['tag_id'] != $get_exist_tag->id) 
+    	if($get_exist_tag != null && $post['tag_id'] != $get_exist_tag->id) 
     	{
     		return $this->errorConflict('this tag is already created');
     	}
@@ -134,7 +134,7 @@ class ApiTagController extends ApiController
 
 	    	$get_tag->last_update = $current_time;
 
-	    	$get_tag->status = $post['status'];
+	    	$get_tag->status = $post['tag_status'];
 
 	    	$updateSuccess = $get_tag->save();
 
@@ -186,7 +186,7 @@ class ApiTagController extends ApiController
     	return $this->errorInternalError('server down');
     }
 
-    public function addNewSubscription($nus_id, $tag_id, $current_time)
+    public function addNewSubscriptionTag($nus_id, $tag_id, $current_time)
     {
     	$new_subscription_tag = new Subscription_Tag();
 
@@ -216,5 +216,24 @@ class ApiTagController extends ApiController
     	{
     		return $this->errorForbidden('tag cannot be deleted, posts with this tag exist');
     	}
+    }
+
+    public function get_post()
+    {
+        if(!Input::has('tag_id'))
+        {
+            return $this->errorWrongArgs('tag_id field is required');
+        }
+
+        $post = Input::all();
+
+        $get_all_post = Tag_Post::where('tag_id', $post['tag_id'])->get();
+
+        if($get_all_post != null)
+        {
+            return $this->respondWithCollection($get_all_post, new TagPostTransformer, 'tag_post');
+        }
+
+        return $this->errorInternalError('server down');
     }
 }

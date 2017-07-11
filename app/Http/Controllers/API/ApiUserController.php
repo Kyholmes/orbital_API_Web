@@ -13,6 +13,7 @@ use Input;
 use Hash;
 use App\Transformer\UserTransformer;
 use App\Transformer\SubscriptionTagTransformer;
+use App\Http\Controllers\GetCurrentTimeController;
 
 class ApiUserController extends ApiController
 {
@@ -222,5 +223,30 @@ class ApiUserController extends ApiController
     	}
 
     	return $this->errorInternalError('server down');
+    }
+
+    public function subscribe_tag()
+    {
+        if(!Input::has('tag_id'))
+        {
+            return $this->errorWrongArgs('tag_id field is required');
+        }
+
+        $post = Input::all();
+
+        $get_nus_id = (new AuthKeyController)->get_nus_id('auth-key');
+
+        $current_time = GetCurrentTimeController::getCurrentTime();
+
+        $subscribeSuccess = ApiTagController::addNewSubscriptionTag($get_nus_id, $post['tag_id'], $current_time);
+
+        if($subscribeSuccess)
+        {
+            $get_new_subscribed_tag = Subscription_Tag::where('tag_id', $post['tag_id'])->first();
+
+            return $this->respondWithItem($get_new_subscribed_tag, new SubscriptionTagTransformer, 'subscription_tag');
+        }
+
+        return $this->errorInternalError('server down');
     }
 }
