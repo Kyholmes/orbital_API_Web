@@ -6,6 +6,8 @@ use App\Post;
 use App\Tag_Post;
 use App\Tag;
 use App\User;
+use App\Subscription_Post;
+use App\Http\Controllers\API\AuthKeyController;
 use League\Fractal\TransformerAbstract;
 
 class PostTransformer extends TransformerAbstract
@@ -14,6 +16,17 @@ class PostTransformer extends TransformerAbstract
 
 	public function transform(Post $post)
 	{
+		$get_nus_id = (new AuthKeyController)->get_nus_id('auth-key');
+
+		$subscribe = Subscription_Post::where(['post_id' => $post->id, 'nus_id' => $get_nus_id])->first();
+
+		$subscribe_bool = false;
+
+		if($subscribe != null)
+		{
+			$subscribe_bool = true;
+		}
+
 		return [
 			'post_id' => $post->id,
 			'title' => $post->title,
@@ -22,7 +35,8 @@ class PostTransformer extends TransformerAbstract
 			'date_added' => $post->created_date,
 			'image_link' => $post->img_link,
 			'vote' => $post->vote,
-			'subscription_no' => $post->subscribe_no
+			'subscription_no' => $post->subscribe_no,
+			'subscribed' => $subscribe_bool
 		];
 	}
 
