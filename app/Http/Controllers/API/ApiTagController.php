@@ -11,6 +11,7 @@ use App\Subscription_Tag;
 use App\Tag_Post;
 use App\Transformer\TagTransformer;
 use App\Transformer\SubscriptionTagTransformer;
+use App\Transformer\TagPostTransformer;
 use Request;
 use Validator;
 use Input;

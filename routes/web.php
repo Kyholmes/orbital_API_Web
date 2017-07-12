@@ -41,7 +41,7 @@ Route::prefix('api/v1')->group(function(){
 
 	Route::delete('/tags', 'API\ApiTagController@delete');
 
-	Route::get('/tags/post', 'API\ApiTagController@get_post')
+	Route::get('/tags/post', 'API\ApiTagController@get_post');
 
 	//post
 	Route::post('/post', 'API\ApiPostController@add');
