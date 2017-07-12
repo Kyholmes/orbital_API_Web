@@ -44,5 +44,7 @@ Route::prefix('api/v1')->group(function(){
 	Route::get('/tags/post', 'API\ApiTagController@get_post');
 
 	//post
+	Route::get('/post', 'API\ApiPostController@get');
+
 	Route::post('/post', 'API\ApiPostController@add');
 });

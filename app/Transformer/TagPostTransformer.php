@@ -28,6 +28,6 @@ class TagPostTransformer extends TransformerAbstract
 	{
 		$posts = Post::where('id', $tag_post->post_id)->first();
 
-		return $this->item($posts, new PostTransformer);
+		return $this->item($posts, new PostsTransformer);
 	}
 }

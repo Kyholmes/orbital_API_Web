@@ -8,6 +8,7 @@ use App\Http\Controllers\GetCurrentTimeController;
 use App\Post;
 use App\Subscription_Post;
 use App\Tag_Post;
+use App\Transformer\PostTransformer;
 use Request;
 use Validator;
 use Input;
@@ -23,6 +24,25 @@ class ApiPostController extends ApiController
     	$this->middleware('token_auth');
 
     	parent::__construct();
+    }
+
+    public function get()
+    {
+    	if(!Input::has('post_id'))
+    	{
+    		return $this->errorWrongArgs('post_id field is required');
+    	}
+
+    	$post = Input::all();
+
+    	$get_post = Post::where('id',$post['post_id'])->first();
+
+    	if($get_post != null)
+    	{
+    		return $this->respondWithItem($get_post, new PostTransformer, 'post');
+    	}
+
+    	return $this->errorInternalError('server down');
     }
 
     public function add()
