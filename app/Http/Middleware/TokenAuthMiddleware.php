@@ -73,7 +73,7 @@ class TokenAuthMiddleware
 
         if($expired_date < $now)
         {
-            $delete_token = Access_Token::where('token', $key->access_token)->delete();
+            $delete_token = Access_Token::where('token', $key->token)->delete();
 
             if($delete_token > 0)
             {
@@ -87,11 +87,20 @@ class TokenAuthMiddleware
         }
         else if(($expired_date - $now) <= (8 * 60 * 60))
         {
-            $expired = $key->expired_date + (24 * 60 * 60);
 
-            $update_token = Access_Token::where('token', $key->access_token)->first();
+            date_default_timezone_set('Asia/Singapore');
 
-            $update_token->expired_date = $expired;
+            $datetimeFormat = 'Y-m-d H:i:s';
+
+            $expired = new \DateTime();
+
+            $expired_date = $key->expired_date + (24 * 60 * 60);
+
+            $expired->setTimestamp($expired_date);
+
+            $update_token = Access_Token::where('token', $key->token)->first();
+
+            $update_token->expired_date = $expired->format($datetimeFormat);
 
             $update_token->save();
 

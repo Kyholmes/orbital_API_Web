@@ -59,6 +59,22 @@ class ApiUserController extends ApiController
     	$new_user->save();
     }
 
+    public function get_profile()
+    {
+        $get_nus_id = (new AuthKeyController)->get_nus_id('auth-key');
+
+        $get_user_profile = User::with(['access_token' => function($q){
+            $q->orderBy('created_date', 'desc')->first();
+        }])->with('subscribe_tag')->where('nus_id', '=', $get_nus_id)->first();
+
+        if($get_user_profile != null)
+        {
+            return $this->respondWithItem($get_user_profile, new UserTransformer);
+        }
+
+        return $this->errorInternalError('server down');
+    }
+
     //login
     public function login()
     {
