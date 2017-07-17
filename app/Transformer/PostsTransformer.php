@@ -29,6 +29,6 @@ class PostsTransformer extends TransformerAbstract
 	{
 		$tags = Tag_Post::where('post_id', $post->id)->get();
 
-		return $this->collection($tags, new TagLabelTransformer, 'tags');
+		return $this->collection($tags, new TagLabelTransformer, 'tag');
 	}
 }

@@ -94,6 +94,39 @@ class ApiPostController extends ApiController
     	return $this->errorInternalError('server down');
     }
 
+    public function delete()
+    {
+    	if(!Input::has('post_id'))
+    	{
+    		return $this->errorWrongArgs('post_id field is required');
+    	}
+
+    	if(!Input::has('nus_id'))
+    	{
+    		return $this->errorWrongArgs('nus_id field is required');
+    	}
+
+    	// if(!Input::has('role'))
+    	// {
+    	// 	return $this->errorWrongArgs('role_id field is required');
+    	// }
+
+    	$post = Input::all();
+
+    	ApiPostController::deleteSubscriptionPost($post['post_id']);
+
+    	ApiPostController::deleteTagPost($post['post_id']);
+
+    	$delete_post = Post::where('id', $post['post_id'])->delete();
+
+    	if($delete_post)
+    	{
+    		return $this->successNoContent();
+    	}
+
+    	return $this->errorInternalError('server down');
+    }
+
     public function addPostToTag($tag_id_array, $post_id)
     {
     	$data = array();
@@ -124,6 +157,26 @@ class ApiPostController extends ApiController
     	$addSuccess = $new_subscription_post->save();
 
     	if(!$addSuccess)
+    	{
+    		return $this->errorInternalError('server down');
+    	}
+    }
+
+    public function deleteSubscriptionPost($post_id)
+    {
+    	$subscription_post = Subscription_Post::where('post_id', $post_id)->delete();
+
+    	if(!$subscription_post)
+    	{
+    		return $this->errorInternalError('server down');
+    	}
+    }
+
+    public function deleteTagPost($post_id)
+    {
+    	$tag_post = Tag_Post::where('post_id', $post_id)->delete();
+
+    	if(!$tag_post)
     	{
     		return $this->errorInternalError('server down');
     	}
