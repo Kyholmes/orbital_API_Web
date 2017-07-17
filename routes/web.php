@@ -51,4 +51,6 @@ Route::prefix('api/v1')->group(function(){
 	Route::post('/post', 'API\ApiPostController@add');
 
 	Route::delete('/post', 'API\ApiPostController@delete');
+
+	Route::put('/post', 'API\ApiPostController@edit');
 });

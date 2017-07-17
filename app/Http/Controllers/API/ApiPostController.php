@@ -127,6 +127,54 @@ class ApiPostController extends ApiController
     	return $this->errorInternalError('server down');
     }
 
+    public function edit()
+    {
+    	$v = Validator::make(Input::all(), [
+    			'post_id' => 'required',
+    			'title' => 'required',
+    			'description' => 'required_without:image_link'
+    	]);
+
+    	if($v->fails())
+    	{
+    		return $this->errorWrongArgs($v->errors());
+    	}
+
+    	$post = Input::all();
+
+    	$get_post = Post::where('id', $post['post_id'])->first();
+
+    	$get_post->title = $post['title'];
+
+    	$get_post->question_descrip = $post['description'];
+
+    	if(Input::has('image_link'))
+    	{
+    		$get_post->img_link = $post['image_link'];
+    	}
+    	
+    	$save_success = $get_post->save();
+
+    	// if(!Input::has('tag_id'))
+    	// {
+    	// 	$tag = Input::get('tag_id');
+
+    	// 	if(!is_array($tag))
+    	// 	{
+    	// 		return $this->errorWrongArgs("tag_id must be in array format");
+    	// 	}
+
+    	// 	ApiPostController::deleteTagPost($post['post_id']);
+    	// }
+
+    	if($save_success)
+    	{
+    		return $this->successNoContent();
+    	}
+
+    	return $this->errorInternalError('server down');
+    }
+
     public function addPostToTag($tag_id_array, $post_id)
     {
     	$data = array();
