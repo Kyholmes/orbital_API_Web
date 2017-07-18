@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 // use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\GetCurrentTimeController;
+use App\Http\Controllers\API\ApiCommentController;
 use App\Post;
 use App\Subscription_Post;
 use App\Tag_Post;
@@ -116,6 +117,8 @@ class ApiPostController extends ApiController
     	ApiPostController::deleteSubscriptionPost($post['post_id']);
 
     	ApiPostController::deleteTagPost($post['post_id']);
+
+    	ApiCommentController::deleteAllComments($post['post_id']);
 
     	$delete_post = Post::where('id', $post['post_id'])->delete();
 

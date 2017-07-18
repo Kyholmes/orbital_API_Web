@@ -6,13 +6,14 @@ use App\Post;
 use App\Tag_Post;
 use App\Tag;
 use App\User;
+use App\Comment;
 use App\Subscription_Post;
 use App\Http\Controllers\API\AuthKeyController;
 use League\Fractal\TransformerAbstract;
 
 class PostTransformer extends TransformerAbstract
 {
-	protected $defaultIncludes = ['tags', 'created_by'];
+	protected $defaultIncludes = ['tags', 'created_by', 'comments'];
 
 	public function transform(Post $post)
 	{
@@ -60,5 +61,17 @@ class PostTransformer extends TransformerAbstract
 		$post_owner = User::where('nus_id', $post->nus_id)->first();
 
 		return $this->item($post_owner, new TagOwnerTransformer);
+	}
+
+	public function includeComments(Post $post)
+	{
+		$comments = Comment::where('post_id', $post->id)->get();
+
+		if($comments != null)
+		{
+			return $this->collection($comments, new CommentTransformer, 'comments');
+		}
+
+		return null;
 	}
 }

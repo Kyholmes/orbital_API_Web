@@ -17,6 +17,7 @@ class TagTransformer extends TransformerAbstract
 	public function transform(Tag $tag)
 	{
 		return [
+			'tag_id' => $tag->id,
 			'tag_name' => $tag->tag,
 			'description' => $tag->description,
 			'last_update' => $tag->last_update,

@@ -53,4 +53,11 @@ Route::prefix('api/v1')->group(function(){
 	Route::delete('/post', 'API\ApiPostController@delete');
 
 	Route::put('/post', 'API\ApiPostController@edit');
+
+	//comment
+	Route::post('/reply', 'API\ApiCommentController@add');
+
+	Route::put('/reply', 'API\ApiCommentController@edit');
+
+	Route::delete('/reply', 'API\ApiCommentController@delete');
 });
