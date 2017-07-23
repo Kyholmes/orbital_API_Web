@@ -5,6 +5,8 @@ namespace App\Transformer;
 
 use App\Comment;
 use App\User;
+use App\Upvote;
+use App\Http\Controllers\API\AuthKeyController;
 use League\Fractal\TransformerAbstract;
 class CommentTransformer extends TransformerAbstract
 {
@@ -12,6 +14,16 @@ class CommentTransformer extends TransformerAbstract
 
 	public function transform(Comment $comment)
 	{
+		$get_nus_id = (new AuthKeyController)->get_nus_id('auth-key');
+
+		$voted = false;
+
+		$check_vote = Upvote::where(['nus_id' => $get_nus_id, 'comment_id' => $comment->id])->first();
+
+		if($check_vote != null)
+		{
+			$voted = true;
+		}
 
 		return [
 			'comment_id' => $comment->id,
@@ -22,6 +34,7 @@ class CommentTransformer extends TransformerAbstract
 			'post_id' => $comment->post_id,
 			'image_link' => $comment->img_link,
 			'created_date' => $comment->created_date,
+			'voted' => $voted
 		];
 	}
 

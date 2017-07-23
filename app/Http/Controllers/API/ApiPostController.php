@@ -9,6 +9,7 @@ use App\Http\Controllers\API\ApiCommentController;
 use App\Post;
 use App\Subscription_Post;
 use App\Tag_Post;
+use App\Upvote;
 use App\Transformer\PostTransformer;
 use Request;
 use Validator;
@@ -43,7 +44,7 @@ class ApiPostController extends ApiController
     		return $this->respondWithItem($get_post, new PostTransformer, 'post');
     	}
 
-    	return $this->errorInternalError('server down');
+    	return $this->errorNotFound('Post not found');
     }
 
     public function add()
@@ -176,6 +177,72 @@ class ApiPostController extends ApiController
     	}
 
     	return $this->errorInternalError('server down');
+    }
+
+    public function upvote_or_downvote()
+    {
+    	if(!Input::has('post_id'))
+    	{
+    		return $this->errorWrongArgs('post_id field is required');
+    	}
+
+    	$post = Input::all();
+
+    	$get_nus_id = (new AuthKeyController)->get_nus_id('auth-key');
+
+    	$upvote_exist = Upvote::where(['nus_id' => $get_nus_id, 'post_id' => $post['post_id']])->first();
+
+    	$get_post = Post::where('id', $post['post_id'])->first();
+
+		if($get_post == null)
+		{
+			return $this->errorNotFound('post not found');
+		}
+
+    	if($upvote_exist == null)
+    	{
+    		
+			$get_post->vote = $get_post->vote + 1;
+
+			$save_success = $get_post->save();
+
+			if($save_success)
+			{
+				$new_vote = new Upvote();
+
+				$new_vote->nus_id = $get_nus_id;
+
+				$new_vote->post_id = $post['post_id'];
+
+				$create_success = $new_vote->save();
+
+				if($create_success)
+				{
+					return $this->successNoContent();
+				}
+			}
+
+			return $this->errorInternalError('server down');
+    		
+    	}
+    	else
+    	{
+    		$get_post->vote = $get_post->vote - 1;
+
+			$save_success = $get_post->save();
+
+			if($save_success)
+			{
+				$delete_success = $upvote_exist->delete();
+
+				if($delete_success)
+				{
+					return $this->successNoContent();
+				}
+			}
+
+			return $this->errorInternalError('server down');
+    	}
     }
 
     public function addPostToTag($tag_id_array, $post_id)

@@ -34,6 +34,8 @@ Route::prefix('api/v1')->group(function(){
 
 	Route::post('/user/tags', 'API\ApiUserController@subscribe_tag');
 
+	Route::get('/user/post', 'API\ApiUserController@get_subscribe_post');
+
 	//tag
 	Route::get('/tags', 'API\ApiTagController@get');
 
@@ -54,10 +56,16 @@ Route::prefix('api/v1')->group(function(){
 
 	Route::put('/post', 'API\ApiPostController@edit');
 
+	Route::put('/post/upvote', 'API\ApiPostController@upvote_or_downvote');
+
 	//comment
 	Route::post('/reply', 'API\ApiCommentController@add');
 
 	Route::put('/reply', 'API\ApiCommentController@edit');
 
 	Route::delete('/reply', 'API\ApiCommentController@delete');
+
+	Route::put('/comment/upvote', 'API\ApiCommentController@upvote_or_downvote');
+
+	Route::put('/comment/pin', 'API\ApiCommentController@pin_unpin_comment');
 });

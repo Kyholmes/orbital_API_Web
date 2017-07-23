@@ -7,6 +7,8 @@ use App\Http\Controllers\API\ApiController;
 use App\Http\Controllers\GetCurrentTimeController;
 use App\Transformer\CommentTransformer;
 use App\Comment;
+use App\Post;
+use App\Upvote;
 use Request;
 use Validator;
 use Input;
@@ -40,6 +42,13 @@ class ApiCommentController extends ApiController
 		$post = Input::all();
 
 		$get_nus_id = (new AuthKeyController)->get_nus_id('auth-key');
+
+		$get_post = Post::where('id', $post['post_id'])->first();
+
+		if($get_post == null)
+		{
+			return $this->errorNotFound('Post not found');
+		}
 
 		$new_comment = new Comment();
 
@@ -96,7 +105,7 @@ class ApiCommentController extends ApiController
 
 		if($save_success)
 		{
-			return $this->successNoContent();
+			return $this->respondWithItem($edit_comment, new CommentTransformer, 'comment');
 		}
 
 		return $this->errorInternalError('server down');
@@ -119,6 +128,111 @@ class ApiCommentController extends ApiController
     	}
 
     	return $this->errorInternalError('server down');
+    }
+
+    public function upvote_or_downvote()
+    {
+    	if(!Input::has('comment_id'))
+    	{
+    		return $this->errorWrongArgs('comment_id field is required');
+    	}
+
+    	$post = Input::all();
+
+    	$get_nus_id = (new AuthKeyController)->get_nus_id('auth-key');
+
+    	$upvote_exist = Upvote::where(['nus_id' => $get_nus_id, 'comment_id' => $post['comment_id']])->first();
+
+    	$get_comment = Comment::where('id', $post['comment_id'])->first();
+
+		if($get_comment == null)
+		{
+			return $this->errorNotFound('comment not found');
+		}
+
+    	if($upvote_exist == null)
+    	{
+    		
+			$get_comment->vote = $get_comment->vote + 1;
+
+			$save_success = $get_comment->save();
+
+			if($save_success)
+			{
+				$new_vote = new Upvote();
+
+				$new_vote->nus_id = $get_nus_id;
+
+				$new_vote->comment_id = $post['comment_id'];
+
+				$create_success = $new_vote->save();
+
+				if($create_success)
+				{
+					return $this->successNoContent();
+				}
+			}
+
+			return $this->errorInternalError('server down');
+    		
+    	}
+    	else
+    	{
+    		$get_comment->vote = $get_comment->vote - 1;
+
+			$save_success = $get_comment->save();
+
+			if($save_success)
+			{
+				$delete_success = $upvote_exist->delete();
+
+				if($delete_success)
+				{
+					return $this->successNoContent();
+				}
+			}
+
+			return $this->errorInternalError('server down');
+    	}
+    }
+
+    public function pin_unpin_comment()
+    {
+    	if(!Input::has('comment_id'))
+    	{
+    		return $this->errorWrongArgs('comment_id field is required');
+    	}
+
+    	$post = Input::all();
+
+    	$get_comment = Comment::where('id', $post['comment_id'])->first();
+
+    	if($get_comment != null)
+    	{
+    		$save_success = false;
+
+    		if($get_comment->best_answer)
+    		{
+    			$get_comment->best_answer = 0;
+
+    			$save_success = $get_comment->save();
+    		}
+    		else
+    		{
+    			$get_comment->best_answer = 1;
+
+    			$save_success = $get_comment->save();
+    		}
+
+    		if($save_success)
+    		{
+    			return $this->successNoContent();
+    		}
+
+    		return $this->errorInternalError('server down');
+    	}
+
+    	return $this->errorNotFound('comment not found');
     }
 
     public static function deleteAllComments($post_id)

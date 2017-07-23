@@ -7,12 +7,14 @@ use App\Http\Controllers\API\ApiController;
 use App\User;
 use App\Access_Token;
 use App\Subscription_Tag;
+use App\Subscription_Post;
 use Request;
 use Validator;
 use Input;
 use Hash;
 use App\Transformer\UserTransformer;
 use App\Transformer\SubscriptionTagTransformer;
+use App\Transformer\SubscriptionPostTransformer;
 use App\Http\Controllers\GetCurrentTimeController;
 
 class ApiUserController extends ApiController
@@ -23,7 +25,7 @@ class ApiUserController extends ApiController
     {
     	$this->middleware('api_auth');
 
-    	$this->middleware('token_auth', ['only' => ['edit_profile']]);
+    	$this->middleware('token_auth', ['only' => ['edit_username', 'get_subscribe_tag', 'subscribe_tag', 'get_subscribe_post']]);
 
     	parent::__construct();
     }
@@ -261,6 +263,20 @@ class ApiUserController extends ApiController
             $get_new_subscribed_tag = Subscription_Tag::where('tag_id', $post['tag_id'])->first();
 
             return $this->respondWithItem($get_new_subscribed_tag, new SubscriptionTagTransformer, 'subscription_tag');
+        }
+
+        return $this->errorInternalError('server down');
+    }
+
+    public function get_subscribe_post()
+    {
+        $get_nus_id = (new AuthKeyController)->get_nus_id('auth-key');
+
+        $get_all_post = Subscription_Post::where('nus_id', $get_nus_id)->get();
+
+        if($get_all_post != null)
+        {
+            return $this->respondWithCollection($get_all_post, new SubscriptionPostTransformer, 'subscription_post');
         }
 
         return $this->errorInternalError('server down');

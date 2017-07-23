@@ -8,6 +8,7 @@ use App\Tag;
 use App\User;
 use App\Comment;
 use App\Subscription_Post;
+use App\Upvote;
 use App\Http\Controllers\API\AuthKeyController;
 use League\Fractal\TransformerAbstract;
 
@@ -28,6 +29,15 @@ class PostTransformer extends TransformerAbstract
 			$subscribe_bool = true;
 		}
 
+		$voted = false;
+
+		$check_vote = Upvote::where(['nus_id' => $get_nus_id, 'post_id' => $post->id])->first();
+
+		if($check_vote != null)
+		{
+			$voted = true;
+		}
+
 		return [
 			'post_id' => $post->id,
 			'title' => $post->title,
@@ -37,7 +47,8 @@ class PostTransformer extends TransformerAbstract
 			'image_link' => $post->img_link,
 			'vote' => $post->vote,
 			'subscription_no' => $post->subscribe_no,
-			'subscribed' => $subscribe_bool
+			'subscribed' => $subscribe_bool,
+			'voted' => $voted
 		];
 	}
 
@@ -65,7 +76,8 @@ class PostTransformer extends TransformerAbstract
 
 	public function includeComments(Post $post)
 	{
-		$comments = Comment::where('post_id', $post->id)->get();
+		$comments = Comment::where('post_id', $post->id)->orderBy('best_answer', 'desc')->orderBy('id', 'asc')->get();
+
 
 		if($comments != null)
 		{
