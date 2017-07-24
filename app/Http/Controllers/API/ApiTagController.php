@@ -187,7 +187,7 @@ class ApiTagController extends ApiController
     	return $this->errorInternalError('server down');
     }
 
-    public function addNewSubscriptionTag($nus_id, $tag_id, $current_time)
+    public static function addNewSubscriptionTag($nus_id, $tag_id, $current_time)
     {
     	$new_subscription_tag = new Subscription_Tag();
 

@@ -262,7 +262,9 @@ class ApiUserController extends ApiController
         {
             $get_new_subscribed_tag = Subscription_Tag::where('tag_id', $post['tag_id'])->first();
 
-            return $this->respondWithItem($get_new_subscribed_tag, new SubscriptionTagTransformer, 'subscription_tag');
+            // return $this->respondWithItem($get_new_subscribed_tag, new SubscriptionTagTransformer, 'subscription_tag');
+
+            return $this->successNoContent();
         }
 
         return $this->errorInternalError('server down');

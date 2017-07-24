@@ -16,13 +16,13 @@ class CommentTransformer extends TransformerAbstract
 	{
 		$get_nus_id = (new AuthKeyController)->get_nus_id('auth-key');
 
-		$voted = false;
+		$voted = 0;
 
 		$check_vote = Upvote::where(['nus_id' => $get_nus_id, 'comment_id' => $comment->id])->first();
 
 		if($check_vote != null)
 		{
-			$voted = true;
+			$voted = 1;
 		}
 
 		return [

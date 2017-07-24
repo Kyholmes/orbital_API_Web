@@ -29,13 +29,13 @@ class PostTransformer extends TransformerAbstract
 			$subscribe_bool = true;
 		}
 
-		$voted = false;
+		$voted = 0;
 
 		$check_vote = Upvote::where(['nus_id' => $get_nus_id, 'post_id' => $post->id])->first();
 
 		if($check_vote != null)
 		{
-			$voted = true;
+			$voted = 1;
 		}
 
 		return [
