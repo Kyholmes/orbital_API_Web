@@ -15,6 +15,7 @@ class CreateSubscriptionPostsTable extends Migration
     {
         Schema::create('subscription__posts', function (Blueprint $table) {
             $table->engine = 'InnoDB';
+            $table->increments('id');
             $table->unsignedInteger('post_id');
             $table->char('nus_id', 8);
             $table->timestamp('last_visit');

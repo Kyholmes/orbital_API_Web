@@ -23,9 +23,9 @@ class CreatePostsTable extends Migration
             $table->unsignedInteger('subscribe_no')->default(0);
             $table->timestamp('created_date');
             $table->timestamp('updated_date');
-            $table->timestamp('expired_date')->nullable();
-            $table->boolean('time_limit')->default(false);
-            $table->unsignedInteger('points')->nullable();
+            $table->timestamp('expired_date')->nullable()->default(NULL);
+            $table->tinyInteger('time_limit')->default(0);
+            $table->unsignedInteger('points')->nullable()->default(NULL);
             $table->char('nus_id', 8);
             $table->foreign('nus_id')->references('nus_id')->on('users');
         });

@@ -15,6 +15,7 @@ class CreateTagPostsTable extends Migration
     {
         Schema::create('tag__posts', function (Blueprint $table) {
             $table->engine = 'InnoDB';
+            $table->increments('id');
             $table->unsignedInteger('post_id');
             $table->unsignedInteger('tag_id');
             $table->foreign('post_id')->references('id')->on('posts');

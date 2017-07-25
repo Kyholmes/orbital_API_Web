@@ -18,12 +18,12 @@ class CreateNotificationsTable extends Migration
             $table->increments('id');
             $table->timestamp('created_date');
             $table->timestamp('expired_date');
-            $table->boolean('read')->default(false);
+            $table->tinyInteger('read')->default(0);
             $table->char('nus_id', 8);
             $table->unsignedInteger('notification_type');
-            $table->unsignedInteger('comment_id')->nullable();
-            $table->unsignedInteger('post_id')->nullable();
-            $table->unsignedInteger('tag_id')->nullable();
+            $table->unsignedInteger('comment_id')->nullable()->default(NULL);
+            $table->unsignedInteger('post_id')->nullable()->default(NULL);
+            $table->unsignedInteger('tag_id')->nullable()->default(NULL);
             $table->foreign('post_id')->references('id')->on('posts');
             $table->foreign('nus_id')->references('nus_id')->on('users');
             $table->foreign('comment_id')->references('id')->on('comments');

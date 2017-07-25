@@ -15,6 +15,7 @@ class CreateSubscriptionTagsTable extends Migration
     {
         Schema::create('subscription__tags', function (Blueprint $table) {
             $table->engine = 'InnoDB';
+            $table->increments('id');
             $table->char('nus_id');
             $table->unsignedInteger('tag_id');
             $table->timestamp('last_visit');

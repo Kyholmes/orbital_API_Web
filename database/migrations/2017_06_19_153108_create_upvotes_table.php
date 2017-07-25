@@ -17,8 +17,8 @@ class CreateUpvotesTable extends Migration
             $table->engine = 'InnoDB';
             $table->increments('id');
             $table->char('nus_id', 8);
-            $table->unsignedInteger('post_id')->nullable();
-            $table->unsignedInteger('comment_id')->nullable();
+            $table->unsignedInteger('post_id')->nullable()->default(NULL);
+            $table->unsignedInteger('comment_id')->nullable()->default(NULL);
             $table->foreign('nus_id')->references('nus_id')->on('users');
             $table->foreign('post_id')->references('id')->on('posts');
             $table->foreign('comment_id')->references('id')->on('comments');

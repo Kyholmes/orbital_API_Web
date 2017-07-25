@@ -17,7 +17,7 @@ class CreateTagsTable extends Migration
             $table->engine = 'InnoDB';
             $table->increments('id');
             $table->string('tag', 100);
-            $table->string('description', 250)->nullable();
+            $table->string('description', 250)->nullable()->default(NULL);
             $table->timestamp("last_update");
             $table->unsignedInteger('subscribe_no');
             $table->char('created_by', 8);

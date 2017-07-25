@@ -17,13 +17,13 @@ class CreateCommentsTable extends Migration
             $table->engine = 'InnoDB';
             $table->increments('id');
             $table->text('description');
-            $table->boolean('best_answer')->default(false);
-            $table->char('reply_to_nus_id', 8)->nullable();
+            $table->tinyInteger('best_answer')->default(0);
+            $table->char('reply_to_nus_id', 8)->nullable()->default(NULL);
             $table->char('nus_id', 8);
             $table->unsignedInteger('post_id');
-            $table->string('img_link', 500)->nullable();
+            $table->string('img_link', 500)->nullable()->default(NULL);
             $table->timestamp('created_date');
-            $table->unsignedInteger('comment_id')->nullable();
+            $table->unsignedInteger('comment_id')->nullable()->default(NULL);
             $table->timestamp('updated_date');
             $table->unsignedInteger('vote')->default(0);
             $table->foreign('post_id')->references('id')->on('posts');
