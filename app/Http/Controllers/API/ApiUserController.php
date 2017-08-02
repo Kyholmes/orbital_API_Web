@@ -188,10 +188,13 @@ class ApiUserController extends ApiController
 
     	$post = Input::all();
 
+        //get nus id from header
 		$get_nus_id = (new AuthKeyController)->get_nus_id('auth-key');
 
+        //get user by nus id
 		$get_user = User::where('nus_id', $get_nus_id)->first();
 
+        //check if the new username has been taken by other users
 		if($get_user->username != $post['username'])
 		{
 			$checkUsername = User::where('username', $post['username'])->exists();
@@ -202,6 +205,7 @@ class ApiUserController extends ApiController
 	    	}
 		}
 
+        //change username
     	$get_user->username = $post['username'];
 
     	$get_user->save();
