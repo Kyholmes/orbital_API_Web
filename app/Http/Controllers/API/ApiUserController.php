@@ -160,6 +160,7 @@ class ApiUserController extends ApiController
     //logout
     public function logout()
     {
+        //get access token from request header
     	$token = (new AuthKeyController)->get_auth_key('auth-key');
 
     	//delete access token when logout
@@ -191,7 +192,7 @@ class ApiUserController extends ApiController
 
 		$get_user = User::where('nus_id', $get_nus_id)->first();
 
-		if($get_user->username == "" || $get_user->username != $post['username'])
+		if($get_user->username != $post['username'])
 		{
 			$checkUsername = User::where('username', $post['username'])->exists();
 
