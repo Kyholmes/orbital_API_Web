@@ -9,8 +9,8 @@ use League\Fractal\TransformerAbstract;
 
 class UserTransformer extends TransformerAbstract
 {
-	protected $availableIncludes = ['access_token', 'subscription_tag'];
-
+	// protected $availableIncludes = ['access_token', 'subscription_tag'];
+	protected $defaultIncludes = ['access_token'];
 	/**
 	* turn this item object into a generic array
 	* @return array

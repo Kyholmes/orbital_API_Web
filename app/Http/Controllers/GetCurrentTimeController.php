@@ -22,4 +22,19 @@ class GetCurrentTimeController extends Controller
 
 	    return $current->format($datetimeFormat);
     }
+
+    public static function getExpiredTime($current_time, $hour)
+    {
+        date_default_timezone_set('Asia/Singapore');
+
+        $expired_time = time($current_time) + ($hour * 60 * 60);
+
+        $datetimeFormat = 'Y-m-d H:i:s';
+
+        $expired = new \DateTime();
+
+        $expired->setTimestamp($expired_time);
+
+        return $expired->format($datetimeFormat);
+    }
 }

@@ -17,6 +17,18 @@ class ApiAuthMiddleware
     public function handle($request, Closure $next)
     {
         $header_item = $request->header();
+
+        //check if header has api_key item, if not return error response
+        if(is_null($request->header('api_key')))
+        {
+            return Response::json([
+                'error' => [
+                    'code' => 'UNAUTH',
+                    'http_code' => 401,
+                    'message' => 'API key not found'
+                ]], 401);
+        }
+
         $api_key = $header_item['api-key'][0];
 
         //check if api token is valid

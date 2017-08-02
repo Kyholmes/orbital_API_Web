@@ -61,6 +61,7 @@ class ApiUserController extends ApiController
     	$new_user->save();
     }
 
+    //get user profile (testing only)
     public function get_profile()
     {
         $get_nus_id = (new AuthKeyController)->get_nus_id('auth-key');
@@ -109,7 +110,7 @@ class ApiUserController extends ApiController
     	}
 
     	//generate new access token
-    	$new_access_token = ApiUserController::generate_access_token($valid_user->nus_id);
+    	ApiUserController::generate_access_token($valid_user->nus_id);
 
     	//get current login user
     	$login_user = User::with(['access_token' => function($q){
@@ -122,39 +123,31 @@ class ApiUserController extends ApiController
     //generate new access token
     public function generate_access_token($nus_id)
     {
+        //randomly generate access token and whether alrdy existed in the database
+        //if yes, generate a new one
     	do
     	{
     		$token = str_random(60);
 
-    		$exits = Access_Token::where('token', $token)->first();
-    	}while (!empty($exits));
+    		$exist = Access_Token::where('token', $token)->first();
+    	}while (!empty($exist));
 
-    	date_default_timezone_set('Asia/Singapore');
+        //get current timestamp
+    	$current_time = GetCurrentTimeController::getCurrentTime();
 
-    	$current_time = time();
+        //get expired timestamp
+    	$expired_date = GetCurrentTimeController::getExpiredTime($current_time, 24);
 
-    	$expired_date = $current_time + (24 * 60 * 60);
-    	// $expired_date = $current_time + 1;
-
-    	$datetimeFormat = 'Y-m-d H:i:s';
-
-		$current = new \DateTime();
-
-		$expired = new \DateTime();
-
-		$current->setTimestamp($current_time);
-
-		$expired->setTimestamp($expired_date);
-
+        //create new token object
     	$new_token = new Access_Token();
 
     	$new_token->token = $token;
 
     	$new_token->nus_id = $nus_id;
 
-    	$new_token->created_date = $current->format($datetimeFormat);
+    	$new_token->created_date = $current_time;
 
-    	$new_token->expired_date = $expired->format($datetimeFormat);
+    	$new_token->expired_date = $expired_date;
 
     	$new_token->save();
 
@@ -162,8 +155,6 @@ class ApiUserController extends ApiController
     	{
     		return $this->errorInternalError('server down');
     	}
-
-    	return $new_token;
     }
 
     //logout
