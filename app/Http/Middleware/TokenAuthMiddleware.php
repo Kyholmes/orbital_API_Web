@@ -21,6 +21,16 @@ class TokenAuthMiddleware
     {
         $header_item = $request->header();
 
+        if(is_null($request->header('auth-key')))
+        {
+            return Response::json([
+                'error' => [
+                    'code' => 'UNAUTH',
+                    'http_code' => 401,
+                    'message' => 'Access key not found'
+                ]], 401);
+        }
+
         $auth_key = $header_item['auth-key'][0];
 
         //check if access token is valid

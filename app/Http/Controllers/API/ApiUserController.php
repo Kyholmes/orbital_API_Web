@@ -25,7 +25,7 @@ class ApiUserController extends ApiController
     {
     	$this->middleware('api_auth');
 
-    	$this->middleware('token_auth', ['only' => ['edit_username', 'get_subscribe_tag', 'subscribe_tag', 'get_subscribe_post']]);
+    	$this->middleware('token_auth', ['only' => ['logout', 'edit_username', 'get_subscribe_tag', 'subscribe_tag', 'get_subscribe_post']]);
 
     	parent::__construct();
     }
