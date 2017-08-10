@@ -222,14 +222,13 @@ class ApiUserController extends ApiController
 
     public function get_subscribe_tag()
     {
-    	if(!Input::has('nus_id'))
-    	{
-    		return $this->errorWrongArgs('nus_id field is required');
-    	}
-
     	$post = Input::all();
 
-    	$get_all_subscription_tag = Subscription_Tag::where('nus_id', $post['nus_id'])->get();
+        //get nus id from auth key
+        $get_nus_id = (new AuthKeyController)->get_nus_id('auth-key');
+
+        //get all subscribed tags by nus id
+    	$get_all_subscription_tag = Subscription_Tag::where('nus_id', $get_nus_id)->get();
 
     	if($get_all_subscription_tag != null)
     	{
