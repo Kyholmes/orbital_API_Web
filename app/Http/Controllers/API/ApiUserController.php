@@ -8,6 +8,7 @@ use App\User;
 use App\Access_Token;
 use App\Subscription_Tag;
 use App\Subscription_Post;
+use App\Tag;
 use Request;
 use Validator;
 use Input;
@@ -220,6 +221,7 @@ class ApiUserController extends ApiController
     	}
     }
 
+    //get all subscribed tags
     public function get_subscribe_tag()
     {
     	$post = Input::all();
@@ -238,8 +240,10 @@ class ApiUserController extends ApiController
     	return $this->errorInternalError('server down');
     }
 
+    //subscribe a tag
     public function subscribe_tag()
-    {
+    {   
+        //check if tag id parameter exist
         if(!Input::has('tag_id'))
         {
             return $this->errorWrongArgs('tag_id field is required');
@@ -251,15 +255,24 @@ class ApiUserController extends ApiController
 
         $current_time = GetCurrentTimeController::getCurrentTime();
 
+        //check if tag exist
+        $get_tag = Tag::where('id', $post['tag_id'])->first();
+
+        //if not exist, return not found error message
+        if($get_tag == null)
+        {
+            return $this->errorNotFound('tag not found');
+        }
+
+        //add new tag subscription into database
         $subscribeSuccess = ApiTagController::addNewSubscriptionTag($get_nus_id, $post['tag_id'], $current_time);
 
+        //if add success
         if($subscribeSuccess)
         {
             $get_new_subscribed_tag = Subscription_Tag::where('tag_id', $post['tag_id'])->first();
 
-            // return $this->respondWithItem($get_new_subscribed_tag, new SubscriptionTagTransformer, 'subscription_tag');
-
-            return $this->successNoContent();
+            return $this->respondWithItem($get_new_subscribed_tag, new SubscriptionTagTransformer, 'subscription_tag');
         }
 
         return $this->errorInternalError('server down');
