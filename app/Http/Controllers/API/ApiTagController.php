@@ -45,6 +45,7 @@ class ApiTagController extends ApiController
     	return $this->errorInternalError('server down');
     }
 
+    //add new tag
     public function add()
     {
     	$v = Validator::make(Input::all(), [
@@ -60,8 +61,10 @@ class ApiTagController extends ApiController
 
     	$get_nus_id = (new AuthKeyController)->get_nus_id('auth-key');
 
+        //check if the tag exist in the database
     	$get_exist_tag = Tag::where('tag', $post['tag_name'])->first();
 
+        //if not, add the tag into database and add new tag subscription for the tag owner
     	if($get_exist_tag == null)
     	{
     		$new_tag = new Tag();
@@ -82,16 +85,23 @@ class ApiTagController extends ApiController
 
 	    	$insert_success = $new_tag->save();
 
+            //if new tag created successfully
 	    	if($insert_success)
 	    	{
 	    		$addSuccess = ApiTagController::addNewSubscriptionTag($get_nus_id, $new_tag->id, $current_time);
 
+                //if tag subscription added successfully
 	    		if($addSuccess)
 	    		{
                     $get_new_tag = Subscription_Tag::where('tag_id', $new_tag->id)->first();
 
 	    			return $this->respondWithItem($get_new_tag, new SubscriptionTagTransformer, 'subscription_tag');
 	    		}
+                //if adding tag subscription is not successful, delete the newly created tag
+                else
+                {
+                    $new_tag->delete();
+                }
 	    	}
 	    	
 	    	return $this->errorInternalError('server down');
