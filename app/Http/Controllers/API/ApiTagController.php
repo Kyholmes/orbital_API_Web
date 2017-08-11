@@ -30,18 +30,19 @@ class ApiTagController extends ApiController
     	parent::__construct();
     }
 
+    //get all tags
     public function get()
     {
+        //get all tags that are in 'open' status
     	$get_all_tag = Tag::where('status', 1)->get();
 
+        //check if get success
     	if($get_all_tag != null)
     	{
     		return $this->respondWithCollection($get_all_tag, new TagTransformer, 'tag');
     	}
-    	else
-    	{
-    		return $this->errorInternalError('server down');
-    	}
+    	
+    	return $this->errorInternalError('server down');
     }
 
     public function add()
