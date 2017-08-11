@@ -112,6 +112,7 @@ class ApiTagController extends ApiController
     	}
     }
 
+    //update tag detail
     public function update()
     {
     	$v = Validator::make(Input::all(), [
@@ -129,6 +130,7 @@ class ApiTagController extends ApiController
 
     	$get_exist_tag = Tag::where('tag', $post['tag_name'])->first();
 
+        //check if the tag name has been taken
     	if($get_exist_tag != null && $post['tag_id'] != $get_exist_tag->id) 
     	{
     		return $this->errorConflict('this tag is already created');
@@ -136,8 +138,16 @@ class ApiTagController extends ApiController
 
     	$get_tag = Tag::where('id', $post['tag_id'])->first();
 
+        //check if the tag exist in database
     	if($get_tag != null)
-    	{
+    	{  
+            //check if tag is created by the current user
+            if(strcasecmp($get_nus_id, $get_tag->created_by) != 0)
+            {
+                return $this->errorUnauthorized('only tag owner are allow to edit tag detail');
+            }
+
+            //update the tag detail
     		$get_tag->tag = $post['tag_name'];
 
 	    	$get_tag->description = $post['description'];
@@ -150,14 +160,13 @@ class ApiTagController extends ApiController
 
 	    	$updateSuccess = $get_tag->save();
 
+            //check if tag details updated successfully
 	    	if($updateSuccess)
 	    	{
 	    		return $this->successNoContent();
 	    	}
-	    	else
-	    	{
-	    		return $this->errorInternalError('server down');
-	    	}
+	    	
+	    	return $this->errorInternalError('server down');
     	}
     	else
     	{
@@ -165,6 +174,7 @@ class ApiTagController extends ApiController
     	}
     }
 
+    //delete tag
     public function delete()
     {
     	if(!Input::has('tag_id'))
@@ -176,15 +186,23 @@ class ApiTagController extends ApiController
 
     	$get_tag = Tag::where('id', $post['tag_id'])->first();
 
+        //check if the tag have subscription other than the tag owner
     	if($get_tag->subscribe_no > 1)
     	{
     		return $this->errorForbidden('tag cannot be deleted, subscriptions exist');
     	}
 
-    	ApiTagController::CheckPostExist($post['tag_id']);
+        //check if there are posts with this tag, if yes this tag cannot be deleted
+    	$deleteAllow = ApiTagController::CheckPostExist($post['tag_id']);
+
+        if(!$deleteAllow)
+        {
+            return $this->errorForbidden('tag cannot be deleted, posts with this tag exist');
+        }
 
     	$delete_subscription_tag = Subscription_Tag::where('tag_id', $post['tag_id'])->delete();
 
+        //if delete success
     	if($delete_subscription_tag)
     	{
     		$delete_tag = Tag::where('id', $post['tag_id'])->delete();
@@ -220,14 +238,17 @@ class ApiTagController extends ApiController
     	}
     }
 
+    //check if there are posts with the tag
     public function CheckPostExist($tag_id)
     {
     	$post_exist = Tag_Post::where('tag_id', $tag_id)->get();
 
-    	if($post_exist == null)
+    	if(sizeof($post_exist) > 0)
     	{
-    		return $this->errorForbidden('tag cannot be deleted, posts with this tag exist');
+    		return false;
     	}
+
+        return true;
     }
 
     public function get_post()

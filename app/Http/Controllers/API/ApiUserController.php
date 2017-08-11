@@ -270,9 +270,17 @@ class ApiUserController extends ApiController
         //if add success
         if($subscribeSuccess)
         {
-            $get_new_subscribed_tag = Subscription_Tag::where('tag_id', $post['tag_id'])->first();
+            $get_tag->subscribe_no = $get_tag->subscribe_no + 1;
 
-            return $this->respondWithItem($get_new_subscribed_tag, new SubscriptionTagTransformer, 'subscription_tag');
+            $save_success = $get_tag->save();
+
+            if($save_success)
+            {
+                $get_new_subscribed_tag = Subscription_Tag::where('tag_id', $post['tag_id'])->first();
+
+                return $this->respondWithItem($get_new_subscribed_tag, new SubscriptionTagTransformer, 'subscription_tag');
+            }
+            
         }
 
         return $this->errorInternalError('server down');
@@ -323,7 +331,16 @@ class ApiUserController extends ApiController
         //if delete success
         if($deleteSuccess)
         {
-            return $this->successNoContent();
+            $get_tag = Tag::where('id', $post['tag_id'])->first();
+
+            $get_tag->subscribe_no = $get_tag->subscribe_no - 1;
+
+            $save_success = $get_tag->save();
+
+            if($save_success)
+            {
+               return $this->successNoContent(); 
+            }
         }
 
         return $this->errorInternalError('server down');
