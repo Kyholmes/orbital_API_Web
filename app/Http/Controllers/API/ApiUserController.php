@@ -296,4 +296,36 @@ class ApiUserController extends ApiController
     }
 
     //unsubscribe tags
+    public function unsubscribe_tag()
+    {
+        //check if tag id parameter exist
+        if(!Input::has('tag_id'))
+        {
+            return $this->errorWrongArgs('tag_id field is required');
+        }
+
+        $post = Input::all();
+
+        $get_nus_id = (new AuthKeyController)->get_nus_id('auth-key');
+
+        //check if user subscribe this tag
+        $get_subscribed_tag = Subscription_Tag::where(['tag_id' => $post['tag_id'], 'nus_id' => $get_nus_id])->first();
+
+        //if user doesnt subscribe this tag, return error message
+        if($get_subscribed_tag == null)
+        {
+            return $this->errorNotFound('this tag subscription is not found in the database');
+        }
+
+        //delete the tag subscription
+        $deleteSuccess = $get_subscribed_tag->delete();
+
+        //if delete success
+        if($deleteSuccess)
+        {
+            return $this->successNoContent();
+        }
+
+        return $this->errorInternalError('server down');
+    }
 }
