@@ -278,12 +278,15 @@ class ApiUserController extends ApiController
         return $this->errorInternalError('server down');
     }
 
+    //get all subscribed posts
     public function get_subscribe_post()
     {
         $get_nus_id = (new AuthKeyController)->get_nus_id('auth-key');
 
+        //get all subscribed posts by nus id
         $get_all_post = Subscription_Post::where('nus_id', $get_nus_id)->get();
 
+        //check if get success
         if($get_all_post != null)
         {
             return $this->respondWithCollection($get_all_post, new SubscriptionPostTransformer, 'subscription_post');
@@ -291,4 +294,6 @@ class ApiUserController extends ApiController
 
         return $this->errorInternalError('server down');
     }
+
+    //unsubscribe tags
 }
