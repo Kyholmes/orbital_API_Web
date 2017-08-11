@@ -216,6 +216,7 @@ class ApiTagController extends ApiController
     	return $this->errorInternalError('server down');
     }
 
+    //add new tag subscription for the user (tag owner) when the user create a tag
     public static function addNewSubscriptionTag($nus_id, $tag_id, $current_time)
     {
     	$new_subscription_tag = new Subscription_Tag();
@@ -251,6 +252,7 @@ class ApiTagController extends ApiController
         return true;
     }
 
+    //get all posts with the tag
     public function get_post()
     {
         if(!Input::has('tag_id'))
@@ -260,6 +262,7 @@ class ApiTagController extends ApiController
 
         $post = Input::all();
 
+        //get all posts by tag id
         $get_all_post = Tag_Post::where('tag_id', $post['tag_id'])->get();
 
         if($get_all_post != null)
