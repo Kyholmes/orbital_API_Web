@@ -235,13 +235,16 @@ class ApiCommentController extends ApiController
     	return $this->errorNotFound('comment not found');
     }
 
+    //delete all comment in this post
     public static function deleteAllComments($post_id)
     {
     	$delete_success = Comment::where('post_id', $post_id)->delete();
 
     	if(!$delete_success)
     	{
-    		return $this->errorInternalError('server down');
+    		return false;
     	}
+
+        return true;
     }
 }

@@ -48,6 +48,7 @@ class ApiPostController extends ApiController
     	return $this->errorNotFound('Post not found');
     }
 
+    //add new post
     public function add()
     {
     	$v = Validator::make(Input::all(), [
@@ -65,6 +66,7 @@ class ApiPostController extends ApiController
 
     	$get_nus_id = (new AuthKeyController)->get_nus_id('auth-key');
 
+        //create new post object and assign value
     	$newPost = new Post();
 
     	$newPost->title = $post['title'];
@@ -79,17 +81,32 @@ class ApiPostController extends ApiController
     		$newPost->img_link = $post['image_link'];
     	}
 
-    	$newPost->nus_id = $post['nus_id'];
+    	$newPost->nus_id = $get_nus_id;
 
     	$addSuccess = $newPost->save();
 
+        //if insert successful
     	if($addSuccess)
     	{
-    		ApiPostController::addPostToTag($post['tag_id'], $newPost->id);
+            //insert record into post tag table
+    		$insertSuccess = ApiPostController::addPostToTag($post['tag_id'], $newPost->id);
+
+            if(!$insertSuccess)
+            {
+                $newPost->delete();
+
+                return $this->errorInternalError('server down');
+            }
 
     		$current_time = GetCurrentTimeController::getCurrentTime();
 
-    		ApiPostController::addNewSubscriptionPost($get_nus_id, $newPost->id, $current_time);
+            //add post subscription
+    		$addNewSubSuccess = ApiPostController::addNewSubscriptionPost($get_nus_id, $newPost->id, $current_time);
+
+            if(!$addNewSubSuccess)
+            {
+                return $this->errorInternalError('server down');
+            }
 
     		return $this->successNoContent();
     	}
@@ -97,6 +114,7 @@ class ApiPostController extends ApiController
     	return $this->errorInternalError('server down');
     }
 
+    //delete post by post id
     public function delete()
     {
     	if(!Input::has('post_id'))
@@ -104,24 +122,35 @@ class ApiPostController extends ApiController
     		return $this->errorWrongArgs('post_id field is required');
     	}
 
-    	if(!Input::has('nus_id'))
-    	{
-    		return $this->errorWrongArgs('nus_id field is required');
-    	}
-
-    	// if(!Input::has('role'))
-    	// {
-    	// 	return $this->errorWrongArgs('role_id field is required');
-    	// }
-
+        $get_nus_id = (new AuthKeyController)->get_nus_id('auth-key');
+    	
     	$post = Input::all();
 
-    	ApiPostController::deleteSubscriptionPost($post['post_id']);
+        //delete all post subscription
+    	$deletePostSubSuccess = ApiPostController::deleteSubscriptionPost($post['post_id']);
 
-    	ApiPostController::deleteTagPost($post['post_id']);
+        if(!$deletePostSubSuccess)
+        {
+            return $this->errorInternalError('server down');
+        }
 
-    	ApiCommentController::deleteAllComments($post['post_id']);
+        //delete tag post records
+    	$deleteTagPostSuccess = ApiPostController::deleteTagPost($post['post_id']);
 
+        if(!$deleteTagPostSuccess)
+        {
+            return $this->errorInternalError('server down');
+        }
+
+        //delete all the comments in this post
+    	$deleteCommentSuccess = ApiCommentController::deleteAllComments($post['post_id']);
+
+        if(!$deleteCommentSuccess)
+        {
+            return $this->errorInternalError('server down');
+        }
+
+        //delete the post by post id
     	$delete_post = Post::where('id', $post['post_id'])->delete();
 
     	if($delete_post)
@@ -246,6 +275,7 @@ class ApiPostController extends ApiController
     	}
     }
 
+    //add records to post tag when a new post is created
     public function addPostToTag($tag_id_array, $post_id)
     {
     	$data = array();
@@ -259,12 +289,16 @@ class ApiPostController extends ApiController
 
     	if(!$insertSuccess)
     	{
-    		return $this->errorInternalError('server down');
+    		return false;
     	}
+
+        return true;
     }
 
+    //add new post subscription
     public function addNewSubscriptionPost($nus_id, $post_id, $current_time)
-    {
+    {   
+        //create new post subscription object and assign values
     	$new_subscription_post = new Subscription_Post();
 
     	$new_subscription_post->post_id = $post_id;
@@ -277,27 +311,35 @@ class ApiPostController extends ApiController
 
     	if(!$addSuccess)
     	{
-    		return $this->errorInternalError('server down');
+    		return false;
     	}
+
+        return true;
     }
 
+    //delete all post subscriptions
     public function deleteSubscriptionPost($post_id)
     {
     	$subscription_post = Subscription_Post::where('post_id', $post_id)->delete();
 
     	if(!$subscription_post)
     	{
-    		return $this->errorInternalError('server down');
+    		return false;
     	}
+
+        return true;
     }
 
+    //delete tag post records
     public function deleteTagPost($post_id)
     {
     	$tag_post = Tag_Post::where('post_id', $post_id)->delete();
 
     	if(!$tag_post)
     	{
-    		return $this->errorInternalError('server down');
+    		return false;
     	}
+
+        return true;
     }
 }

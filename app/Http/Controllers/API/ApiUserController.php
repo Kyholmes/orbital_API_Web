@@ -345,4 +345,6 @@ class ApiUserController extends ApiController
 
         return $this->errorInternalError('server down');
     }
+
+    //subscribe post, unsubscribe post
 }
