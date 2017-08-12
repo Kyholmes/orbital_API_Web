@@ -28,6 +28,7 @@ class ApiPostController extends ApiController
     	parent::__construct();
     }
 
+    //get post detail by post id
     public function get()
     {
     	if(!Input::has('post_id'))
