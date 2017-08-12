@@ -126,6 +126,14 @@ class ApiPostController extends ApiController
     	
     	$post = Input::all();
 
+        //check if this post exist
+        $get_post = Post::where('id', $post['post_id'])->first();
+
+        if($get_post == null)
+        {
+            return $this->errorNotFound('this post cannot be found');
+        }
+
         //delete all post subscription
     	$deletePostSubSuccess = ApiPostController::deleteSubscriptionPost($post['post_id']);
 
@@ -147,7 +155,6 @@ class ApiPostController extends ApiController
 
         if(!$deleteCommentSuccess)
         {
-            var_dump('problem');
             return $this->errorInternalError('server down');
         }
 

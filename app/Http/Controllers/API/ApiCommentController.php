@@ -130,6 +130,23 @@ class ApiCommentController extends ApiController
 
     	$post = Input::all();
 
+        //get comment by comment id
+        $get_comment = Comment::where('id', $post['comment_id'])->first();
+
+        if($get_comment == null)
+        {
+            return $this->errorNotFound('this comment cannot be found');
+        }
+
+        //delete all upvotes record on this comment
+        $deleteUpvoteSuccess = ApiCommentController::deleteAllUpvotes($post['comment_id']);
+
+        if(!$deleteUpvoteSuccess)
+        {
+            return $this->errorInternalError('server down');
+        }
+
+        //delete the comment by comment id
     	$delete_success = Comment::where('id', $post['comment_id'])->delete();
 
     	if($delete_success)
@@ -270,6 +287,26 @@ class ApiCommentController extends ApiController
     	{
     		return false;
     	}
+
+        return true;
+    }
+
+    //delete all upvote records when a comment is deleted
+    public static function deleteAllUpvotes($comment_id)
+    {
+        $get_upvote = Upvote::where('comment_id', $comment_id)->get();
+
+        if(sizeof($get_upvote) <= 0)
+        {
+            return true;
+        }
+
+        $delete_success = Upvote::where('comment_id', $comment_id)->delete();
+
+        if(!$delete_success)
+        {
+            return false;
+        }
 
         return true;
     }
