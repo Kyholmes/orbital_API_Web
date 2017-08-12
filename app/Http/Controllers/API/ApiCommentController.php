@@ -140,6 +140,7 @@ class ApiCommentController extends ApiController
     	return $this->errorInternalError('server down');
     }
 
+    //upvote or downvote a comment
     public function upvote_or_downvote()
     {
     	if(!Input::has('comment_id'))
@@ -151,24 +152,26 @@ class ApiCommentController extends ApiController
 
     	$get_nus_id = (new AuthKeyController)->get_nus_id('auth-key');
 
+        //get comment by comment id
+        $get_comment = Comment::where('id', $post['comment_id'])->first();
+
+        if($get_comment == null)
+        {
+            return $this->errorNotFound('comment not found');
+        }
+
     	$upvote_exist = Upvote::where(['nus_id' => $get_nus_id, 'comment_id' => $post['comment_id']])->first();
-
-    	$get_comment = Comment::where('id', $post['comment_id'])->first();
-
-		if($get_comment == null)
-		{
-			return $this->errorNotFound('comment not found');
-		}
 
     	if($upvote_exist == null)
     	{
-    		
+            //increase comment voting
 			$get_comment->vote = $get_comment->vote + 1;
 
 			$save_success = $get_comment->save();
 
 			if($save_success)
 			{
+                //insert new voting record
 				$new_vote = new Upvote();
 
 				$new_vote->nus_id = $get_nus_id;
@@ -182,18 +185,18 @@ class ApiCommentController extends ApiController
 					return $this->successNoContent();
 				}
 			}
-
-			return $this->errorInternalError('server down');
     		
     	}
     	else
     	{
+            //decrease comment voting
     		$get_comment->vote = $get_comment->vote - 1;
 
 			$save_success = $get_comment->save();
 
 			if($save_success)
 			{
+                //delete voting record
 				$delete_success = $upvote_exist->delete();
 
 				if($delete_success)
@@ -201,9 +204,9 @@ class ApiCommentController extends ApiController
 					return $this->successNoContent();
 				}
 			}
-
-			return $this->errorInternalError('server down');
     	}
+
+        return $this->errorInternalError('server down');
     }
 
     public function pin_unpin_comment()
