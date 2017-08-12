@@ -147,6 +147,14 @@ class ApiPostController extends ApiController
 
         if(!$deleteCommentSuccess)
         {
+            var_dump('problem');
+            return $this->errorInternalError('server down');
+        }
+
+        $deleteVoteSuccess = ApiPostController::deleteVote($post['post_id']);
+
+        if(!$deleteVoteSuccess)
+        {
             return $this->errorInternalError('server down');
         }
 
@@ -203,6 +211,7 @@ class ApiPostController extends ApiController
     	return $this->errorInternalError('server down');
     }
 
+    //upvote or downvote a post
     public function upvote_or_downvote()
     {
     	if(!Input::has('post_id'))
@@ -214,24 +223,28 @@ class ApiPostController extends ApiController
 
     	$get_nus_id = (new AuthKeyController)->get_nus_id('auth-key');
 
+        //get post by post id
+        $get_post = Post::where('id', $post['post_id'])->first();
+
+        if($get_post == null)
+        {
+            return $this->errorNotFound('post not found');
+        }
+
+        //check if user has voted before
     	$upvote_exist = Upvote::where(['nus_id' => $get_nus_id, 'post_id' => $post['post_id']])->first();
 
-    	$get_post = Post::where('id', $post['post_id'])->first();
-
-		if($get_post == null)
-		{
-			return $this->errorNotFound('post not found');
-		}
-
+        //if user never vote this post before
     	if($upvote_exist == null)
     	{
-    		
+            //increase voting of the post
 			$get_post->vote = $get_post->vote + 1;
 
 			$save_success = $get_post->save();
 
 			if($save_success)
 			{
+                //insert new user voting record
 				$new_vote = new Upvote();
 
 				$new_vote->nus_id = $get_nus_id;
@@ -245,18 +258,18 @@ class ApiPostController extends ApiController
 					return $this->successNoContent();
 				}
 			}
-
-			return $this->errorInternalError('server down');
-    		
     	}
+        //if user voted before, downvote the post
     	else
     	{
+            //decrease voting of the post
     		$get_post->vote = $get_post->vote - 1;
 
 			$save_success = $get_post->save();
 
 			if($save_success)
 			{
+                //delete the voting records
 				$delete_success = $upvote_exist->delete();
 
 				if($delete_success)
@@ -264,9 +277,9 @@ class ApiPostController extends ApiController
 					return $this->successNoContent();
 				}
 			}
-
-			return $this->errorInternalError('server down');
     	}
+
+        return $this->errorInternalError('server down');
     }
 
     //add records to post tag when a new post is created
@@ -333,6 +346,19 @@ class ApiPostController extends ApiController
     	{
     		return false;
     	}
+
+        return true;
+    }
+
+    //delete vote records
+    public function deleteVote($post_id)
+    {
+        $post_vote = Upvote::where('post_id', $post_id)->delete();
+
+        if(!$post_vote)
+        {
+            return false;
+        }
 
         return true;
     }

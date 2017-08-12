@@ -238,6 +238,13 @@ class ApiCommentController extends ApiController
     //delete all comment in this post
     public static function deleteAllComments($post_id)
     {
+        $get_comment = Comment::where('post_id', $post_id)->get();
+
+        if(sizeof($get_comment) <= 0)
+        {
+            return true;
+        }
+
     	$delete_success = Comment::where('post_id', $post_id)->delete();
 
     	if(!$delete_success)
