@@ -27,6 +27,7 @@ class ApiCommentController extends ApiController
     	parent::__construct();
     }
 
+    //add comment
     public function add()
     {
     	$v = Validator::make(Input::all(), [
@@ -43,6 +44,7 @@ class ApiCommentController extends ApiController
 
 		$get_nus_id = (new AuthKeyController)->get_nus_id('auth-key');
 
+        //get post by post id
 		$get_post = Post::where('id', $post['post_id'])->first();
 
 		if($get_post == null)
@@ -50,6 +52,7 @@ class ApiCommentController extends ApiController
 			return $this->errorNotFound('Post not found');
 		}
 
+        //create comment object & assign values
 		$new_comment = new Comment();
 
 		$new_comment->description = $post['description'];
