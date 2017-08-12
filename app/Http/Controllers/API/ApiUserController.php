@@ -9,6 +9,7 @@ use App\Access_Token;
 use App\Subscription_Tag;
 use App\Subscription_Post;
 use App\Tag;
+use App\Post;
 use Request;
 use Validator;
 use Input;
@@ -17,6 +18,7 @@ use App\Transformer\UserTransformer;
 use App\Transformer\SubscriptionTagTransformer;
 use App\Transformer\SubscriptionPostTransformer;
 use App\Http\Controllers\GetCurrentTimeController;
+use App\Http\Controllers\API\ApiPostController;
 
 class ApiUserController extends ApiController
 {
@@ -346,5 +348,88 @@ class ApiUserController extends ApiController
         return $this->errorInternalError('server down');
     }
 
-    //subscribe post, unsubscribe post
+    //subscribe a post
+    public function subscribe_post()
+    {
+        //check if post id parameter exist
+        if(!Input::has('post_id'))
+        {
+            return $this->errorWrongArgs('post_id field is required');
+        }
+
+        $post = Input::all();
+
+        $get_nus_id = (new AuthKeyController)->get_nus_id('auth-key');
+
+        //get current time
+        $current_time = GetCurrentTimeController::getCurrentTime();
+
+        //check if post exist
+        $get_post = Post::where('id', $post['post_id'])->first();
+
+        //if not exist, return not found error message
+        if($get_post == null)
+        {
+            return $this->errorNotFound('post not found');
+        }
+
+        $addNewSubSuccess = ApiPostController::addNewSubscriptionPost($get_nus_id, $post['post_id'], $current_time);
+
+        if($addNewSubSuccess)
+        {
+            $get_post->subscribe_no = $get_post->subscribe_no + 1;
+
+            $save_success = $get_post->save();
+
+            if($save_success)
+            {
+                return $this->successNoContent();
+            }
+        }
+
+        return $this->errorInternalError('server down');
+    }
+
+    //unsubscribe a post
+    public function unsubscribe_post()
+    {
+        //check if post id parameter exist
+        if(!Input::has('post_id'))
+        {
+            return $this->errorWrongArgs('post_id field is required');
+        }
+
+        $post = Input::all();
+
+        $get_nus_id = (new AuthKeyController)->get_nus_id('auth-key');
+
+        //check if user subscribe this post
+        $get_subscribed_post = Subscription_Post::where(['post_id' => $post['post_id'], 'nus_id' => $get_nus_id])->first();
+
+        //if user doesnt subscribe this post, return error message
+        if($get_subscribed_post == null)
+        {
+            return $this->errorNotFound('this post subscription is not found in the database');
+        }
+
+        //delete the post subscription
+        $deleteSuccess = $get_subscribed_post->delete();
+
+        //if delete success
+        if($deleteSuccess)
+        {
+            $get_post = Post::where('id', $post['post_id'])->first();
+
+            $get_post->subscribe_no = $get_post->subscribe_no - 1;
+
+            $save_success = $get_post->save();
+
+            if($save_success)
+            {
+               return $this->successNoContent(); 
+            }
+        }
+
+        return $this->errorInternalError('server down');
+    }
 }

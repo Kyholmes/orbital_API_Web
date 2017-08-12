@@ -121,6 +121,7 @@ class ApiCommentController extends ApiController
 		return $this->errorInternalError('server down');
     }
 
+    //delete comment
     public function delete()
     {
     	if(!Input::has('comment_id'))

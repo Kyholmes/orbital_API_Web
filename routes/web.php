@@ -38,6 +38,10 @@ Route::prefix('api/v1')->group(function(){
 
 	Route::delete('/user/tags', 'API\ApiUserController@unsubscribe_tag');
 
+	Route::post('/user/post', 'API\ApiUserController@subscribe_post');
+
+	Route::delete('/user/post', 'API\ApiUserController@unsubscribe_post');
+
 	//tag
 	Route::get('/tags', 'API\ApiTagController@get');
 

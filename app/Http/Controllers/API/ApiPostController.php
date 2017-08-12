@@ -310,7 +310,7 @@ class ApiPostController extends ApiController
     }
 
     //add new post subscription
-    public function addNewSubscriptionPost($nus_id, $post_id, $current_time)
+    public static function addNewSubscriptionPost($nus_id, $post_id, $current_time)
     {   
         //create new post subscription object and assign values
     	$new_subscription_post = new Subscription_Post();
@@ -360,6 +360,13 @@ class ApiPostController extends ApiController
     //delete vote records
     public function deleteVote($post_id)
     {
+        $get_post_vote = Upvote::where('post_id', $post_id)->get();
+
+        if(sizeof($get_post_vote) <= 0)
+        {
+            return true;
+        }
+
         $post_vote = Upvote::where('post_id', $post_id)->delete();
 
         if(!$post_vote)
