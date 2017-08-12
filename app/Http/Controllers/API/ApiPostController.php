@@ -176,7 +176,13 @@ class ApiPostController extends ApiController
 
     	$post = Input::all();
 
+        //get the post by post id and edit values
     	$get_post = Post::where('id', $post['post_id'])->first();
+
+        if($get_post == null)
+        {
+            return $this->errorNotFound('this post cannot be found');
+        }
 
     	$get_post->title = $post['title'];
 
@@ -188,18 +194,6 @@ class ApiPostController extends ApiController
     	}
     	
     	$save_success = $get_post->save();
-
-    	// if(!Input::has('tag_id'))
-    	// {
-    	// 	$tag = Input::get('tag_id');
-
-    	// 	if(!is_array($tag))
-    	// 	{
-    	// 		return $this->errorWrongArgs("tag_id must be in array format");
-    	// 	}
-
-    	// 	ApiPostController::deleteTagPost($post['post_id']);
-    	// }
 
     	if($save_success)
     	{
