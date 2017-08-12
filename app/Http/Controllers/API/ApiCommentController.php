@@ -81,6 +81,7 @@ class ApiCommentController extends ApiController
 		return $this->errorInternalError('server down');
     }
 
+    //edit comment
     public function edit()
     {
     	$v = Validator::make(Input::all(), [
@@ -95,7 +96,13 @@ class ApiCommentController extends ApiController
 
     	$post = Input::all();
 
+        //get comment by comment id
     	$edit_comment = Comment::where('id', $post['comment_id'])->first();
+
+        if($edit_comment == null)
+        {
+            return $this->errorNotFound('Comment not found');
+        }
 
     	$edit_comment->description = $post['description'];
 
