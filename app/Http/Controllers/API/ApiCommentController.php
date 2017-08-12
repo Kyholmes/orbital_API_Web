@@ -209,6 +209,7 @@ class ApiCommentController extends ApiController
         return $this->errorInternalError('server down');
     }
 
+    //pin or unpin a comment as the best answer
     public function pin_unpin_comment()
     {
     	if(!Input::has('comment_id'))
@@ -218,12 +219,15 @@ class ApiCommentController extends ApiController
 
     	$post = Input::all();
 
+        //get comment by comment id
     	$get_comment = Comment::where('id', $post['comment_id'])->first();
 
     	if($get_comment != null)
     	{
     		$save_success = false;
 
+            //check if the comment is the best answer
+            //if no, pin as best answer, otherwise unpin
     		if($get_comment->best_answer)
     		{
     			$get_comment->best_answer = 0;
@@ -241,11 +245,13 @@ class ApiCommentController extends ApiController
     		{
     			return $this->successNoContent();
     		}
-
-    		return $this->errorInternalError('server down');
     	}
+        else
+        {
+            return $this->errorNotFound('this comment not found');
+        }
 
-    	return $this->errorNotFound('comment not found');
+    	return $this->errorInternalError('server down');
     }
 
     //delete all comment in this post
