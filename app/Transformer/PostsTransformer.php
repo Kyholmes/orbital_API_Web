@@ -31,6 +31,7 @@ class PostsTransformer extends TransformerAbstract
 			'title' => $post->title,
 			'description' => $post->question_descrip,
 			'date_updated' => $post->updated_date,
+			'date_added' => $post->created_date,
 			'nus_id' => $post->nus_id,
 			'voted' => $voted
 		];

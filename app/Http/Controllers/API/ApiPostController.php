@@ -6,6 +6,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\GetCurrentTimeController;
 use App\Http\Controllers\API\ApiCommentController;
+use App\Http\Controllers\API\ApiAchievementController;
 use App\Post;
 use App\Subscription_Post;
 use App\Tag_Post;
@@ -108,7 +109,10 @@ class ApiPostController extends ApiController
                 return $this->errorInternalError('server down');
             }
 
-    		return $this->successNoContent();
+            $updateAchievementSuccess = ApiAchievementController::updateAchievement(1, 1, $get_nus_id);
+
+            return $this->successNoContent();
+            
     	}
 
     	return $this->errorInternalError('server down');
@@ -170,6 +174,8 @@ class ApiPostController extends ApiController
 
     	if($delete_post)
     	{
+            $updateAchievementSuccess = ApiAchievementController::updateAchievement(1, -1, $get_nus_id);
+
     		return $this->successNoContent();
     	}
 
@@ -226,9 +232,17 @@ class ApiPostController extends ApiController
     		return $this->errorWrongArgs('post_id field is required');
     	}
 
+        // if(!Input::has('owner_nus_id'))
+        // {
+        //     return $this->errorWrongArgs('post owner nus_id field is required');
+        // }
+
+
     	$post = Input::all();
 
     	$get_nus_id = (new AuthKeyController)->get_nus_id('auth-key');
+
+        // $owner_nus_id = $post['owner_nus_id'];
 
         //get post by post id
         $get_post = Post::where('id', $post['post_id'])->first();
@@ -262,6 +276,10 @@ class ApiPostController extends ApiController
 
 				if($create_success)
 				{
+                    $updateAchievementSuccess = ApiAchievementController::updateAchievement(2, 1, $get_nus_id);
+
+                    $updateAchievementSuccess = ApiAchievementController::updateAchievement(2, 1, $get_post->nus_id);
+
 					return $this->successNoContent();
 				}
 			}
@@ -281,6 +299,10 @@ class ApiPostController extends ApiController
 
 				if($delete_success)
 				{
+                    $updateAchievementSuccess = ApiAchievementController::updateAchievement(2, -1, $get_nus_id);
+
+                    $updateAchievementSuccess = ApiAchievementController::updateAchievement(2, -1, $get_post->nus_id);
+
 					return $this->successNoContent();
 				}
 			}

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 // use Illuminate\Http\Request;
 use App\Http\Controllers\API\ApiController;
 use App\Http\Controllers\GetCurrentTimeController;
+use App\Http\Controllers\API\ApiAchievementController;
 use App\Transformer\CommentTransformer;
 use App\Comment;
 use App\Post;
@@ -75,6 +76,8 @@ class ApiCommentController extends ApiController
 
 		if($save_success)
 		{
+            $updateAchievementSuccess = ApiAchievementController::updateAchievement(3, 1, $get_nus_id);
+
 			return $this->respondWithItem($new_comment, new CommentTransformer, 'comment');
 		}
 
@@ -134,6 +137,8 @@ class ApiCommentController extends ApiController
         //get comment by comment id
         $get_comment = Comment::where('id', $post['comment_id'])->first();
 
+        $get_nus_id = (new AuthKeyController)->get_nus_id('auth-key');
+
         if($get_comment == null)
         {
             return $this->errorNotFound('this comment cannot be found');
@@ -152,6 +157,8 @@ class ApiCommentController extends ApiController
 
     	if($delete_success)
     	{
+            $updateAchievementSuccess = ApiAchievementController::updateAchievement(3, -1, $get_nus_id);
+
     		return $this->successNoContent();
     	}
 
@@ -166,9 +173,16 @@ class ApiCommentController extends ApiController
     		return $this->errorWrongArgs('comment_id field is required');
     	}
 
+        if(!Input::has('owner_nus_id'))
+        {
+            return $this->errorWrongArgs('owner_nus_id field is required');
+        }
+
     	$post = Input::all();
 
     	$get_nus_id = (new AuthKeyController)->get_nus_id('auth-key');
+
+        $owner_nus_id = $post['owner_nus_id'];
 
         //get comment by comment id
         $get_comment = Comment::where('id', $post['comment_id'])->first();
@@ -200,6 +214,10 @@ class ApiCommentController extends ApiController
 
 				if($create_success)
 				{
+                    $updateAchievementSuccess = ApiAchievementController::updateAchievement(2, 1, $get_nus_id);
+
+                    $updateAchievementSuccess = ApiAchievementController::updateAchievement(2, 1, $owner_nus_id);
+
 					return $this->successNoContent();
 				}
 			}
@@ -219,6 +237,10 @@ class ApiCommentController extends ApiController
 
 				if($delete_success)
 				{
+                    $updateAchievementSuccess = ApiAchievementController::updateAchievement(2, -1, $get_nus_id);
+
+                    $updateAchievementSuccess = ApiAchievementController::updateAchievement(2, -1, $owner_nus_id);
+
 					return $this->successNoContent();
 				}
 			}
@@ -251,12 +273,16 @@ class ApiCommentController extends ApiController
     			$get_comment->best_answer = 0;
 
     			$save_success = $get_comment->save();
+
+                $updateAchievementSuccess = ApiAchievementController::updateAchievement(4, -1, $get_comment->nus_id);
     		}
     		else
     		{
     			$get_comment->best_answer = 1;
 
     			$save_success = $get_comment->save();
+
+                $updateAchievementSuccess = ApiAchievementController::updateAchievement(4, 1, $get_comment->nus_id);
     		}
 
     		if($save_success)

@@ -22,6 +22,15 @@ class PostTransformer extends TransformerAbstract
 
 		$subscribe = Subscription_Post::where(['post_id' => $post->id, 'nus_id' => $get_nus_id])->first();
 
+		$best_answer = Comment::where('best_answer', 1)->first();
+
+		$best_answer_exist = false;
+
+		if($best_answer != null)
+		{
+			$best_answer_exist = true;
+		}
+
 		$subscribe_bool = false;
 
 		if($subscribe != null)
@@ -48,7 +57,8 @@ class PostTransformer extends TransformerAbstract
 			'vote' => $post->vote,
 			'subscription_no' => $post->subscribe_no,
 			'subscribed' => $subscribe_bool,
-			'voted' => $voted
+			'voted' => $voted,
+			'best_answer_exist' => $best_answer_exist
 		];
 	}
 
