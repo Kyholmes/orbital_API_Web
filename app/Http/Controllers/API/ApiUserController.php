@@ -432,4 +432,25 @@ class ApiUserController extends ApiController
 
         return $this->errorInternalError('server down');
     }
+
+    public function update_last_seen()
+    {
+        $get_nus_id = (new AuthKeyController)->get_nus_id('auth-key');
+
+        $get_user = User::where('nus_id', $get_nus_id)->first();
+
+        if($get_user != null)
+        {
+            $get_user->notification_last_seen = GetCurrentTimeController::getCurrentTime();
+
+            $update_success = $get_user->save();
+
+            if($update_success)
+            {
+                return $this->successNoContent();
+            }
+        }
+
+        return $this->errorInternalError('server down');
+    }
 }

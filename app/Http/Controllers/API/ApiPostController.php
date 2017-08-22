@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\GetCurrentTimeController;
 use App\Http\Controllers\API\ApiCommentController;
 use App\Http\Controllers\API\ApiAchievementController;
+use App\Http\Controllers\API\ApiTagController;
+use App\Http\Controllers\API\ApiNotificationController;
 use App\Post;
 use App\Subscription_Post;
 use App\Tag_Post;
@@ -90,7 +92,7 @@ class ApiPostController extends ApiController
     	if($addSuccess)
     	{
             //insert record into post tag table
-    		$insertSuccess = ApiPostController::addPostToTag($post['tag_id'], $newPost->id);
+    		$insertSuccess = ApiPostController::addPostToTag($post['tag_id'], $newPost->id, $get_nus_id;);
 
             if(!$insertSuccess)
             {
@@ -143,7 +145,7 @@ class ApiPostController extends ApiController
 
         if(!$deletePostSubSuccess)
         {
-            return $this->errorInternalError('server down');
+            return $this->errorInternalError('server down 1');
         }
 
         //delete tag post records
@@ -151,7 +153,7 @@ class ApiPostController extends ApiController
 
         if(!$deleteTagPostSuccess)
         {
-            return $this->errorInternalError('server down');
+            return $this->errorInternalError('server down 2');
         }
 
         //delete all the comments in this post
@@ -159,14 +161,14 @@ class ApiPostController extends ApiController
 
         if(!$deleteCommentSuccess)
         {
-            return $this->errorInternalError('server down');
+            return $this->errorInternalError('server down 3');
         }
 
         $deleteVoteSuccess = ApiPostController::deleteVote($post['post_id']);
 
         if(!$deleteVoteSuccess)
         {
-            return $this->errorInternalError('server down');
+            return $this->errorInternalError('server down 4');
         }
 
         //delete the post by post id
@@ -179,7 +181,7 @@ class ApiPostController extends ApiController
     		return $this->successNoContent();
     	}
 
-    	return $this->errorInternalError('server down');
+    	return $this->errorInternalError('server down 5');
     }
 
     public function edit()
@@ -312,13 +314,15 @@ class ApiPostController extends ApiController
     }
 
     //add records to post tag when a new post is created
-    public function addPostToTag($tag_id_array, $post_id)
+    public function addPostToTag($tag_id_array, $post_id, $post_owner)
     {
     	$data = array();
 
     	for ($i = 0; $i < sizeof($tag_id_array); $i++) 
     	{ 
     		array_push($data, array('post_id' => $post_id, 'tag_id' => $tag_id_array[$i]));
+
+            ApiTagController::sendNotificationToTagSubscription($tag_id_array[$i], $post_id, $post_owner);
     	}
 
     	$insertSuccess = Tag_Post::insert($data);
@@ -356,9 +360,16 @@ class ApiPostController extends ApiController
     //delete all post subscriptions
     public function deleteSubscriptionPost($post_id)
     {
-    	$subscription_post = Subscription_Post::where('post_id', $post_id)->delete();
+    	$subscription_post = Subscription_Post::where('post_id', $post_id)->get();
 
-    	if(!$subscription_post)
+        if(sizeof($subscription_post) <= 0)
+        {
+            return true;
+        }
+
+        $subscription_post_success = Subscription_Post::where('post_id', $post_id)->delete();
+
+    	if(!$subscription_post_success)
     	{
     		return false;
     	}
@@ -369,9 +380,16 @@ class ApiPostController extends ApiController
     //delete tag post records
     public function deleteTagPost($post_id)
     {
-    	$tag_post = Tag_Post::where('post_id', $post_id)->delete();
+        $tag_post = Tag_Post::where('post_id', $post_id)->get();
 
-    	if(!$tag_post)
+        if(sizeof($tag_post) <= 0)
+        {
+            return true;
+        }
+
+    	$tag_post_success = Tag_Post::where('post_id', $post_id)->delete();
+
+    	if(!$tag_post_success)
     	{
     		return false;
     	}
@@ -397,5 +415,18 @@ class ApiPostController extends ApiController
         }
 
         return true;
+    }
+
+    public static function sendNotificationToPostSubscription($post_id, $comment_id, $owner)
+    {
+        $getPostSub = Subscription_Post::where('post_id', $post_id)->get();
+
+        for($i = 0; $i < sizeof($getPostSub); $i++)
+        {
+            if(strcasecmp($getPostSub[$i]->nus_id, $owner) != 0)
+            {
+                ApiNotificationController::addNotification($getPostSub[$i]->nus_id, 2, $comment_id, $post_id, 0);
+            }
+        }
     }
 }

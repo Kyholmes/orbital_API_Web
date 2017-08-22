@@ -21,6 +21,7 @@ class CreateUsersTable extends Migration
             $table->string('username', 50)->unique()->default(NULL);
             $table->string('password',100);
             $table->string('role',50)->nullable();
+            $table->timestamp('notification_last_seen');
             // $table->primary('nus_id');
         });
 

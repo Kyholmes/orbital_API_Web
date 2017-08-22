@@ -27,7 +27,6 @@ class CreateNotificationsTable extends Migration
             $table->foreign('post_id')->references('id')->on('posts');
             $table->foreign('nus_id')->references('nus_id')->on('users');
             $table->foreign('comment_id')->references('id')->on('comments');
-            $table->foreign('notification_type')->references('id')->on('notification__types');
             $table->foreign('tag_id')->references('id')->on('tags');
         });
 

@@ -45,9 +45,8 @@ Route::prefix('api/v1')->group(function(){
 	//get achievements
 	Route::get('/user/achievement', 'API\ApiAchievementController@get');
 
-	//notification --> until here
-	//modify user table --> add column for notification last seen
-	// Route::get('/user/notification', 'API\ApiNotificationController@get');
+	//update notification last seen
+	Route::put('/user/notification', 'API\ApiUserController@update_last_seen');
 
 	//tag
 	Route::get('/tags', 'API\ApiTagController@get');
@@ -82,11 +81,14 @@ Route::prefix('api/v1')->group(function(){
 
 	Route::put('/comment/pin', 'API\ApiCommentController@pin_unpin_comment');
 
+	//notification
+	Route::get('/notification/update', 'API\ApiNotificationController@getUpdate');
 
+	Route::get('/notification', 'API\ApiNotificationController@get');
+
+	Route::put('/notification/read', 'API\ApiNotificationController@update');
 });
 
 
-//get achievements --> check
-//get new notifications	
-//update notification section last seen
+//get new notifications
 //update notification read status

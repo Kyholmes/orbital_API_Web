@@ -6,6 +6,8 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\API\ApiController;
 use App\Http\Controllers\GetCurrentTimeController;
 use App\Http\Controllers\API\ApiAchievementController;
+use App\Http\Controllers\API\ApiPostController;
+use App\Http\Controllers\API\ApiNotificationController;
 use App\Transformer\CommentTransformer;
 use App\Comment;
 use App\Post;
@@ -77,6 +79,13 @@ class ApiCommentController extends ApiController
 		if($save_success)
 		{
             $updateAchievementSuccess = ApiAchievementController::updateAchievement(3, 1, $get_nus_id);
+
+            ApiPostController::sendNotificationToPostSubscription($post['post_id'], $new_comment->id, $get_nus_id);
+
+            if(Input::has('reply_to_id'))
+            {
+                ApiNotificationController::addNotification($new_comment->reply_to_nus_id, 3, $new_comment->id, $post['post_id'], 0);
+            }
 
 			return $this->respondWithItem($new_comment, new CommentTransformer, 'comment');
 		}
@@ -275,6 +284,8 @@ class ApiCommentController extends ApiController
     			$save_success = $get_comment->save();
 
                 $updateAchievementSuccess = ApiAchievementController::updateAchievement(4, -1, $get_comment->nus_id);
+
+                ApiNotificationController::addNotification($get_comment->nus_id, 4, $get_comment->id, $get_comment->post_id, 0);
     		}
     		else
     		{
@@ -306,6 +317,11 @@ class ApiCommentController extends ApiController
         if(sizeof($get_comment) <= 0)
         {
             return true;
+        }
+
+        for($i = 0; $i < sizeof($get_comment); $i++)
+        {
+            $delete_comment = ApiCommentController::deleteAllUpvotes($get_comment[$i]);
         }
 
     	$delete_success = Comment::where('post_id', $post_id)->delete();

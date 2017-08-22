@@ -59,6 +59,7 @@ class ApiAchievementController extends ApiController
     	switch ($achievementType) {
     		//update question no & points
     		case 1:
+            var_dump($get_achievement);
     			$get_achievement->question_no = $get_achievement->question_no + $value;
 
                 $get_achievement->points = $get_achievement->points + ($value * 10);

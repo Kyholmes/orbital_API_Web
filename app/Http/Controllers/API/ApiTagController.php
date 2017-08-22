@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 // use Illuminate\Http\Request;
 use App\Http\Controllers\API\ApiController;
 use App\Http\Controllers\GetCurrentTimeController;
+use App\Http\Controllers\API\ApiNotificationController;
 use App\User;
 use App\Tag;
 use App\Subscription_Tag;
@@ -271,5 +272,18 @@ class ApiTagController extends ApiController
         }
 
         return $this->errorInternalError('server down');
+    }
+
+    public static function sendNotificationToTagSubscription($tag_id, $post_id, $owner)
+    {
+        $getTagSub = Subscription_Tag::where('tag_id', $tag_id)->get();
+
+        for($i = 0; $i < sizeof($getTagSub); $i++)
+        {
+            if(strcasecmp($getTagSub[$i]->nus_id, $owner) != 0)
+            {
+                ApiNotificationController::addNotification($getTagSub[$i]->nus_id, 1, 0, $post_id, $tag_id);
+            }
+        }
     }
 }
