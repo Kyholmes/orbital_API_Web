@@ -19,6 +19,7 @@ use App\Transformer\SubscriptionTagTransformer;
 use App\Transformer\SubscriptionPostTransformer;
 use App\Http\Controllers\GetCurrentTimeController;
 use App\Http\Controllers\API\ApiPostController;
+use App\Http\Controllers\API\ApiAchievementController;
 
 class ApiUserController extends ApiController
 {
@@ -62,6 +63,8 @@ class ApiUserController extends ApiController
     	$new_user->password = bcrypt($post['password']);
 
     	$new_user->save();
+
+        ApiAchievementController::addNewAchievement($post['nus_id']);
     }
 
     //get user profile (testing only)
