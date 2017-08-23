@@ -92,7 +92,7 @@ class ApiPostController extends ApiController
     	if($addSuccess)
     	{
             //insert record into post tag table
-    		$insertSuccess = ApiPostController::addPostToTag($post['tag_id'], $newPost->id, $get_nus_id;);
+    		$insertSuccess = ApiPostController::addPostToTag($post['tag_id'], $newPost->id, $get_nus_id);
 
             if(!$insertSuccess)
             {

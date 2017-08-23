@@ -284,8 +284,6 @@ class ApiCommentController extends ApiController
     			$save_success = $get_comment->save();
 
                 $updateAchievementSuccess = ApiAchievementController::updateAchievement(4, -1, $get_comment->nus_id);
-
-                ApiNotificationController::addNotification($get_comment->nus_id, 4, $get_comment->id, $get_comment->post_id, 0);
     		}
     		else
     		{
@@ -294,6 +292,9 @@ class ApiCommentController extends ApiController
     			$save_success = $get_comment->save();
 
                 $updateAchievementSuccess = ApiAchievementController::updateAchievement(4, 1, $get_comment->nus_id);
+
+
+                ApiNotificationController::addNotification($get_comment->nus_id, 4, $get_comment->id, $get_comment->post_id, 0);
     		}
 
     		if($save_success)

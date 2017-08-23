@@ -23,7 +23,7 @@ class UserTransformer extends TransformerAbstract
 			'name' => $user->name,
 			'username' => $user->username,
 			'role' => $user->role,
-			'notification_last_seen' => $user->notification_last_seen;
+			'notification_last_seen' => $user->notification_last_seen
 		];
 	}
 

@@ -28,8 +28,4 @@ class Tag extends Model
     	return $this->hasMany('App\Tag_Post', 'tag_id', 'id');
     }
 
-    public function notification()
-    {
-    	return $this->hasMany('App\Notification', 'tag_id', 'id');
-    }
 }

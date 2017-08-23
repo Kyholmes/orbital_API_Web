@@ -24,10 +24,10 @@ class CreateNotificationsTable extends Migration
             $table->unsignedInteger('comment_id')->nullable()->default(NULL);
             $table->unsignedInteger('post_id')->nullable()->default(NULL);
             $table->unsignedInteger('tag_id')->nullable()->default(NULL);
-            $table->foreign('post_id')->references('id')->on('posts');
+            // $table->foreign('post_id')->references('id')->on('posts');
             $table->foreign('nus_id')->references('nus_id')->on('users');
-            $table->foreign('comment_id')->references('id')->on('comments');
-            $table->foreign('tag_id')->references('id')->on('tags');
+            // $table->foreign('comment_id')->references('id')->on('comments');
+            // $table->foreign('tag_id')->references('id')->on('tags');
         });
 
         // Schema::table('notifications', function(Blueprint $table){

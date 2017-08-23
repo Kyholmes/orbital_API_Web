@@ -34,9 +34,4 @@ class Post extends Model
     {
         return $this->hasMany('App\Comment', 'post_id', 'id');
     }
-
-    public function notification()
-    {
-        return $this->hasMany('App\Notification', 'post_id', 'id');
-    }
 }

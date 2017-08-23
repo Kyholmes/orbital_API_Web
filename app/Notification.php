@@ -11,7 +11,8 @@ class Notification extends Model
         'expired_date', 'read', 'nus_id', 'notification_type', 'comment_id', 'post_id'
     ];
 
-    const CREATED_AT = 'created_date';
+    // const CREATED_AT = 'created_date';
+    public $timestamps = false;
 
     public function user()
     {
@@ -19,18 +20,18 @@ class Notification extends Model
     }
 
 
-    public function comment()
-    {
-    	return $this->belongsTo('App\Comment', 'comment_id', 'id');
-    }
+    // public function comment()
+    // {
+    // 	return $this->belongsTo('App\Comment', 'comment_id', 'id');
+    // }
 
-    public function post()
-    {
-    	return $this->belongsTo('App\Post', 'post_id', 'id');
-    }
+    // public function post()
+    // {
+    // 	return $this->belongsTo('App\Post', 'post_id', 'id');
+    // }
 
-    public function tag()
-    {
-    	return $this->belongsTo('App\Tag', 'tag_id', 'id');
-    }
+    // public function tag()
+    // {
+    // 	return $this->belongsTo('App\Tag', 'tag_id', 'id');
+    // }
 }

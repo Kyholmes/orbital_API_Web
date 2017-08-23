@@ -35,8 +35,4 @@ class Comment extends Model
     	return $this->hasMany('Comment', 'comment_id', 'id');
     }
 
-    public function notification()
-    {
-    	return $this->hasMany('App\Notification', 'comment_id', 'id');
-    }
 }

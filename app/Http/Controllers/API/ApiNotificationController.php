@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 // use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\GetCurrentTimeController;
 use App\Notification;
 use App\User;
 use App\Transformer\NotificationUpdateTransformer;
@@ -33,9 +34,11 @@ class ApiNotificationController extends ApiController
 
     	// $update = Notification::where(['nus_id', '=', $get_nus_id], ['created_date','>', $getUser->notification_last_seen])->get();
 
-    	$update = Notification::where('created_date','>', $getUser->notification_last_seen)->get();
+    	// $update = Notification::where('created_date','>', $getUser->notification_last_seen)->get();
 
-    	$update = $update->where('nus_id', $get_nus_id)->all();
+    	// $update = $update->where('nus_id', $get_nus_id)->where('read', '!=', 1)->all();
+
+    	$update = Notification::where('nus_id', $get_nus_id)->where('read', '!=', 1)->get();
 
     	if(sizeof($update) > 0)
     	{
@@ -57,7 +60,7 @@ class ApiNotificationController extends ApiController
 
     	if($getAllNotification != null)
     	{
-    		return $this->respondWithCollection($getAllNotification, new NotificationTransformer, 'tag');
+    		return $this->respondWithCollection($getAllNotification, new NotificationTransformer, 'notification');
     	}
 
     	return $this->errorInternalError('server down');
@@ -72,7 +75,12 @@ class ApiNotificationController extends ApiController
 
     	$post = Input::all();
 
-    	$get_notification = Notification::where('id', $notification_id)->first();
+    	$get_notification = Notification::where('id', $post['notification_id'])->first();
+
+    	if($get_notification == null)
+    	{
+    		return $this->errorNotFound('this notification cannot be found');
+    	}
 
     	$get_notification->read = 1;
 
@@ -104,6 +112,8 @@ class ApiNotificationController extends ApiController
     	$new_notification->post_id = $post_id;
 
     	$new_notification->tag_id = $tag_id;
+
+    	$new_notification->created_date = GetCurrentTimeController::getCurrentTime();
 
     	$save_success = $new_notification->save();
 
